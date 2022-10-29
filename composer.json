@@ -1,0 +1,16 @@
+{
+    "autoload": {
+        "psr-4": {
+            "ddziaduch\\OutboxPattern\\": "src/",
+            "ddziaduch\\OutboxPattern\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "psr/event-dispatcher": "^1.0",
+        "doctrine/mongodb-odm": "2.4.2"
+    },
+    "require-dev": {
+        "php": "^8.1",
+        "phpunit/phpunit": "^9.5"
+    }
+}
