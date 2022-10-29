@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Tests;
+namespace ddziaduch\OutboxPattern\Tests\Adapter;
 
 use ddziaduch\OutboxPattern\Adapter\MongoEventStore;
 use ddziaduch\OutboxPattern\Domain\Event;
