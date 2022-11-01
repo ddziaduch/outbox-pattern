@@ -6,7 +6,7 @@ namespace ddziaduch\OutboxPattern\Application\Port;
 
 use ddziaduch\OutboxPattern\Domain\Event;
 
-interface EventStore
+interface EventScribe
 {
-    public function store(Event $event): void;
+    public function write(Event $event): void;
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ddziaduch\OutboxPattern\Tests\Application;
 
 use ddziaduch\OutboxPattern\Application\EventDispatcherDecorator;
-use ddziaduch\OutboxPattern\Application\Port\EventStore;
+use ddziaduch\OutboxPattern\Application\Port\EventScribe;
 use ddziaduch\OutboxPattern\Domain\Event;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -19,8 +19,8 @@ class EventDispatcherDecoratorTest extends TestCase
         $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $eventDispatcher->expects(self::once())->method('dispatch')->with($event);
 
-        $eventStore = $this->createMock(EventStore::class);
-        $eventStore->expects(self::never())->method('store');
+        $eventStore = $this->createMock(EventScribe::class);
+        $eventStore->expects(self::never())->method('write');
 
         $decorator = new EventDispatcherDecorator($eventStore, $eventDispatcher);
 
@@ -34,8 +34,8 @@ class EventDispatcherDecoratorTest extends TestCase
         $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $eventDispatcher->expects(self::never())->method('dispatch');
 
-        $eventStore = $this->createMock(EventStore::class);
-        $eventStore->expects(self::once())->method('store')->with($event);
+        $eventStore = $this->createMock(EventScribe::class);
+        $eventStore->expects(self::once())->method('write')->with($event);
 
         $decorator = new EventDispatcherDecorator($eventStore, $eventDispatcher);
 

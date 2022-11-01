@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Tests\Adapter;
 
-use ddziaduch\OutboxPattern\Adapter\MongoEventStore;
+use ddziaduch\OutboxPattern\Adapter\MongoEventScribe;
 use ddziaduch\OutboxPattern\Domain\Event;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAware;
 use Doctrine\Persistence\ObjectManager;
@@ -12,10 +12,10 @@ use PHPUnit\Framework\TestCase;
 
 use function PHPUnit\Framework\assertSame;
 
-class MongoEventStoreTest extends TestCase
+class MongoEventScribeTest extends TestCase
 {
     /** @test */
-    public function testStoringObjectWithOutbox(): void
+    public function testWritingObjectWithOutbox(): void
     {
         $event = $this->createStub(Event::class);
 
@@ -43,14 +43,14 @@ class MongoEventStoreTest extends TestCase
         $objectManager->method('find')->willReturn($object);
         $objectManager->expects(self::once())->method('persist')->with($object);
 
-        $eventStore = new MongoEventStore($objectManager);
-        $eventStore->store($event);
+        $scribe = new MongoEventScribe($objectManager);
+        $scribe->write($event);
 
         assertSame($object->getOutbox()->dequeue(), $event);
     }
 
     /** @test */
-    public function testStoringObjectWithoutOutbox(): void
+    public function testWritingObjectWithoutOutbox(): void
     {
         $event = $this->createStub(Event::class);
 
@@ -60,7 +60,7 @@ class MongoEventStoreTest extends TestCase
         $objectManager->method('find')->willReturn($object);
         $objectManager->expects(self::never())->method('persist');
 
-        $eventStore = new MongoEventStore($objectManager);
-        $eventStore->store($event);
+        $scribe = new MongoEventScribe($objectManager);
+        $scribe->write($event);
     }
 }
