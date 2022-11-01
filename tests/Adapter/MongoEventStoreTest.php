@@ -6,7 +6,7 @@ namespace ddziaduch\OutboxPattern\Tests\Adapter;
 
 use ddziaduch\OutboxPattern\Adapter\MongoEventStore;
 use ddziaduch\OutboxPattern\Domain\Event;
-use ddziaduch\OutboxPattern\Infrastructure\ObjectWithOutbox;
+use ddziaduch\OutboxPattern\Infrastructure\OutboxAware;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,8 @@ class MongoEventStoreTest extends TestCase
     {
         $event = $this->createStub(Event::class);
 
-        $object = new class implements ObjectWithOutbox {
+        $object = new class implements OutboxAware {
+            /** @var \SplQueue<Event> */
             private readonly \SplQueue $outbox;
 
             public function __construct()

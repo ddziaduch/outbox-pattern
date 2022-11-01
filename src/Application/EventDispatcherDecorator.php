@@ -8,7 +8,7 @@ use ddziaduch\OutboxPattern\Application\Port\EventStore;
 use ddziaduch\OutboxPattern\Domain\Event;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-class EventDispatcherDecorator implements EventDispatcherInterface
+final class EventDispatcherDecorator implements EventDispatcherInterface
 {
     public function __construct(
         private readonly EventStore $eventStore,
@@ -16,12 +16,14 @@ class EventDispatcherDecorator implements EventDispatcherInterface
     ) {
     }
 
-    public function dispatch(object $event): void
+    public function dispatch(object $event): object
     {
         if ($event instanceof Event) {
             $this->eventStore->store($event);
         } else {
             $this->dispatcher->dispatch($event);
         }
+
+        return $event;
     }
 }

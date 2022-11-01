@@ -8,5 +8,5 @@ use ddziaduch\OutboxPattern\Domain\Event;
 
 interface EventStore
 {
-    public function store(Event $event);
+    public function store(Event $event): void;
 }

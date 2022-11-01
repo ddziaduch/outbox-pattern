@@ -6,10 +6,8 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 
 use ddziaduch\OutboxPattern\Domain\Event;
 
-interface ObjectWithOutbox
+interface OutboxAware
 {
-    public function getDocument(): object;
-
     /** @return \SplQueue<Event> */
-    public function getOutbox(): \SplQueue;
+    public function getOutbox(): iterable;
 }
