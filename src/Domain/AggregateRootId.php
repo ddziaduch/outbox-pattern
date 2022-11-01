@@ -6,5 +6,5 @@ namespace ddziaduch\OutboxPattern\Domain;
 
 interface AggregateRootId
 {
-
+    public function value(): mixed;
 }

@@ -28,11 +28,6 @@ class MongoEventScribeTest extends TestCase
                 $this->outbox = new \SplQueue();
             }
 
-            public function getDocument(): object
-            {
-                return new \stdClass();
-            }
-
             public function getOutbox(): \SplQueue
             {
                 return $this->outbox;

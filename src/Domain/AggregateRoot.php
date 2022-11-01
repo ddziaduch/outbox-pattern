@@ -6,5 +6,5 @@ namespace ddziaduch\OutboxPattern\Domain;
 
 interface AggregateRoot
 {
-
+    public function id(): AggregateRootId;
 }

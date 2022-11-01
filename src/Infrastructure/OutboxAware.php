@@ -9,5 +9,5 @@ use ddziaduch\OutboxPattern\Domain\Event;
 interface OutboxAware
 {
     /** @return \SplQueue<Event> */
-    public function getOutbox(): iterable;
+    public function getOutbox(): \SplQueue;
 }
