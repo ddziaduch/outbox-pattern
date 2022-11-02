@@ -11,7 +11,7 @@ class FakeEvent implements Event
 {
     public function id(): string
     {
-        // TODO: Implement id() method.
+        throw new \LogicException('implement me');
     }
 
     public function __construct(private readonly FakeAggregateRoot $aggregateRoot)
