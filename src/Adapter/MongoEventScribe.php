@@ -21,6 +21,7 @@ final class MongoEventScribe implements EventScribe
         $aggregateId = $event->aggregateRootId();
         $aggregateRootClassName = $event->aggregateRootClassName();
 
+        // TODO delete aggregate root class name and use unit of work, if that fails use repositories
         $object = $this->objectManager->find(
             $aggregateRootClassName,
             $aggregateId,

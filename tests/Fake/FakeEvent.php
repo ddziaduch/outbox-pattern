@@ -9,6 +9,11 @@ use ddziaduch\OutboxPattern\Domain\Event;
 
 class FakeEvent implements Event
 {
+    public function id(): string
+    {
+        // TODO: Implement id() method.
+    }
+
     public function __construct(private readonly FakeAggregateRoot $aggregateRoot)
     {
     }

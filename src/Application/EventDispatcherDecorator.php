@@ -11,15 +11,16 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 final class EventDispatcherDecorator implements EventDispatcherInterface
 {
     public function __construct(
-        private readonly EventScribe $eventStore,
+        private readonly EventScribe $eventScribe,
         private readonly EventDispatcherInterface $dispatcher,
     ) {
     }
 
     public function dispatch(object $event): object
     {
+        // TODO always save
         if ($event instanceof Event) {
-            $this->eventStore->write($event);
+            $this->eventScribe->write($event);
         } else {
             $this->dispatcher->dispatch($event);
         }

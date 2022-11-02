@@ -6,6 +6,9 @@ namespace ddziaduch\OutboxPattern\Domain;
 
 interface Event
 {
+    /** @return string UUID */
+    public function id(): string;
+
     public function aggregateRootId(): AggregateRootId;
 
     /** @return class-string<AggregateRoot> */

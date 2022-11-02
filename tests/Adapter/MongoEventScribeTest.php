@@ -10,11 +10,8 @@ use ddziaduch\OutboxPattern\Infrastructure\OutboxAware;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
-use function PHPUnit\Framework\assertSame;
-
 class MongoEventScribeTest extends TestCase
 {
-    /** @test */
     public function testWritingObjectWithOutbox(): void
     {
         $event = $this->createStub(Event::class);
@@ -41,10 +38,9 @@ class MongoEventScribeTest extends TestCase
         $scribe = new MongoEventScribe($objectManager);
         $scribe->write($event);
 
-        assertSame($object->getOutbox()->dequeue(), $event);
+        self::assertSame($object->getOutbox()->dequeue(), $event);
     }
 
-    /** @test */
     public function testWritingObjectWithoutOutbox(): void
     {
         $event = $this->createStub(Event::class);
