@@ -9,6 +9,7 @@ use ddziaduch\OutboxPattern\Infrastructure\OutboxAware;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareFinder;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareRepositories;
 
+// TODO: cover with test
 final class RepositoriesFinder implements OutboxAwareFinder
 {
     public function __construct(private readonly OutboxAwareRepositories $repositories,)

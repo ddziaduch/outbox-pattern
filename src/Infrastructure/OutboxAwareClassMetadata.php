@@ -7,6 +7,7 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 
+// TODO: cover with test
 class OutboxAwareClassMetadata
 {
     public function __construct(private readonly ObjectManager $objectManager)

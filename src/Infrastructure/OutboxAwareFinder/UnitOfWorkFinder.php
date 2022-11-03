@@ -10,6 +10,7 @@ use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareClassMetadata;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareFinder;
 use Doctrine\ODM\MongoDB\UnitOfWork;
 
+// TODO: cover with test
 final class UnitOfWorkFinder implements OutboxAwareFinder
 {
     public function __construct(

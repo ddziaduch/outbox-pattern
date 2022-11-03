@@ -8,6 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use Traversable;
 
+// TODO: cover with test
 class OutboxAwareRepositories implements \IteratorAggregate
 {
     public function __construct(

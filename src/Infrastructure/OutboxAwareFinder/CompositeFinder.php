@@ -8,6 +8,7 @@ use ddziaduch\OutboxPattern\Domain\AggregateRootId;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAware;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareFinder;
 
+// TODO: cover with test
 final class CompositeFinder implements OutboxAwareFinder
 {
     /** @var OutboxAwareFinder[] */
