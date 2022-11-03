@@ -10,7 +10,4 @@ interface Event
     public function id(): string;
 
     public function aggregateRootId(): AggregateRootId;
-
-    /** @return class-string<AggregateRoot> */
-    public function aggregateRootClassName(): string;
 }

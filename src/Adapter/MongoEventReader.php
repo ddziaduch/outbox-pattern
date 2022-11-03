@@ -17,7 +17,7 @@ final class MongoEventReader implements EventReader
 
     public function read(): iterable
     {
-        foreach ($this->repositories->all() as $repository) {
+        foreach ($this->repositories as $repository) {
             $objects = $repository->findBy(['outbox' => ['$not' => ['$size' => 0]]]);
             foreach ($objects as $object) {
                 if (!$object instanceof OutboxAware) {

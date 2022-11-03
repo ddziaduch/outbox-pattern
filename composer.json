@@ -1,7 +1,11 @@
 {
     "autoload": {
         "psr-4": {
-            "ddziaduch\\OutboxPattern\\": "src/",
+            "ddziaduch\\OutboxPattern\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "ddziaduch\\OutboxPattern\\Tests\\": "tests/"
         }
     },

@@ -22,9 +22,4 @@ class FakeEvent implements Event
     {
         return $this->aggregateRoot->id();
     }
-
-    public function aggregateRootClassName(): string
-    {
-        return FakeAggregateRoot::class;
-    }
 }

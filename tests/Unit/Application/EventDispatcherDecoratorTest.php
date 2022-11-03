@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Tests\Application;
+namespace ddziaduch\OutboxPattern\Tests\Unit\Application;
 
 use ddziaduch\OutboxPattern\Application\EventDispatcherDecorator;
 use ddziaduch\OutboxPattern\Application\Port\EventScribe;

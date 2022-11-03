@@ -6,8 +6,9 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
+use Traversable;
 
-class OutboxAwareRepositories
+class OutboxAwareRepositories implements \IteratorAggregate
 {
     public function __construct(
         private readonly ObjectManager $objectManager,
@@ -15,8 +16,8 @@ class OutboxAwareRepositories
     ) {
     }
 
-    /** @return iterable<ObjectRepository<OutboxAware>> */
-    public function all(): iterable
+    /** @return Traversable<ObjectRepository<OutboxAware>> */
+    public function getIterator(): Traversable
     {
         foreach ($this->classMetadata->all() as $metadata) {
             yield $this->objectManager->getRepository($metadata->getName());

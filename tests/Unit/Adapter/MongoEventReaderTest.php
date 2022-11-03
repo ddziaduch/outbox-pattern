@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Tests\Adapter;
+namespace ddziaduch\OutboxPattern\Tests\Unit\Adapter;
 
 use ddziaduch\OutboxPattern\Adapter\MongoEventReader;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareRepositories;
@@ -40,7 +40,7 @@ class MongoEventReaderTest extends TestCase
         $repository2->method('findBy')->willReturn([$object3]);
 
         $repositories = $this->createStub(OutboxAwareRepositories::class);
-        $repositories->method('all')->willReturn([$repository1, $repository2]);
+        $repositories->method('getIterator')->willReturn(new \ArrayIterator([$repository1, $repository2]));
 
         $expectedEvents = [
             ...$object1->getOutbox(),
