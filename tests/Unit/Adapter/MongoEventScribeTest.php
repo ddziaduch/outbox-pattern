@@ -31,7 +31,9 @@ class MongoEventScribeTest extends TestCase
             ),
         );
 
-        self::assertSame($object->getOutbox()->dequeue(), $event);
+        $outbox = $object->getOutbox();
+        self::assertCount(1, $outbox);
+        self::assertTrue($outbox->contains($event));
     }
 
     public function testWritingFailure(): void

@@ -43,7 +43,7 @@ final class MongoEventScribe implements EventScribe
 
         foreach ($this->events as $key => $event) {
             if ($event->aggregateRootId()->value() === $aggregate->id()) {
-                $aggregate->getOutbox()->enqueue($event);
+                $aggregate->getOutbox()->attach($event);
                 unset($this->events[$key]);
             }
         }

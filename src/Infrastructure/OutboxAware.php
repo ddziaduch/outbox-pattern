@@ -10,6 +10,6 @@ interface OutboxAware
 {
     public function id(): mixed;
 
-    /** @return \SplQueue<Event> */
-    public function getOutbox(): \SplQueue;
+    /** @return \SplObjectStorage<Event, mixed> */
+    public function getOutbox(): \SplObjectStorage;
 }

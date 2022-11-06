@@ -9,15 +9,15 @@ use ddziaduch\OutboxPattern\Infrastructure\OutboxAware;
 
 final class FakeObjectWithOutbox implements OutboxAware
 {
-    /** @var \SplQueue<Event> */
-    private readonly \SplQueue $outbox;
+    /** @var \SplObjectStorage<Event, mixed> */
+    private readonly \SplObjectStorage $outbox;
 
     public function __construct(private readonly mixed $id)
     {
-        $this->outbox = new \SplQueue();
+        $this->outbox = new \SplObjectStorage();
     }
 
-    public function getOutbox(): \SplQueue
+    public function getOutbox(): \SplObjectStorage
     {
         return $this->outbox;
     }
