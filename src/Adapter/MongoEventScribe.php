@@ -6,28 +6,46 @@ namespace ddziaduch\OutboxPattern\Adapter;
 
 use ddziaduch\OutboxPattern\Application\Port\EventScribe;
 use ddziaduch\OutboxPattern\Domain\Event;
-use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareFinder;
+use ddziaduch\OutboxPattern\Infrastructure\OutboxAware;
+use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\ObjectManager;
 
 final class MongoEventScribe implements EventScribe
 {
-    public function __construct(
-        private readonly ObjectManager $objectManager,
-        private readonly OutboxAwareFinder $finder,
-    ) {
+    /** @var array<Event> */
+    private array $events = [];
+
+    public function __construct() {
+    }
+
+    public function __destruct()
+    {
+        if (!empty($this->events)) {
+            throw new \LogicException(
+                'The aggregate must be persisted after dispatching it\'s events.',
+            );
+        }
     }
 
     public function write(Event $event): void
     {
-        $aggregateId = $event->aggregateRootId();
+        $this->events[] = $event;
+    }
 
-        $object = $this->finder->find($aggregateId);
+    /** @param LifecycleEventArgs<ObjectManager> $args */
+    public function onPrePersist(LifecycleEventArgs $args): void
+    {
+        $aggregate = $args->getObject();
 
-        if ($object === null) {
-            throw new \LogicException('Object with ID' . $aggregateId->value() . ' not found');
+        if (!$aggregate instanceof OutboxAware) {
+            return;
         }
 
-        $object->getOutbox()->enqueue($event);
-        $this->objectManager->persist($object);
+        foreach ($this->events as $key => $event) {
+            if ($event->aggregateRootId()->value() === $aggregate->id()) {
+                $aggregate->getOutbox()->enqueue($event);
+                unset($this->events[$key]);
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ final class FakeObjectWithOutbox implements OutboxAware
     /** @var \SplQueue<Event> */
     private readonly \SplQueue $outbox;
 
-    public function __construct()
+    public function __construct(private readonly mixed $id)
     {
         $this->outbox = new \SplQueue();
     }
@@ -20,5 +20,10 @@ final class FakeObjectWithOutbox implements OutboxAware
     public function getOutbox(): \SplQueue
     {
         return $this->outbox;
+    }
+
+    public function id(): mixed
+    {
+        return $this->id;
     }
 }
