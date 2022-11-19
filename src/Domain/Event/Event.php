@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Domain;
+namespace ddziaduch\OutboxPattern\Domain\Event;
+
+use ddziaduch\OutboxPattern\Domain\ValueObject\AggregateRootId;
 
 interface Event
 {

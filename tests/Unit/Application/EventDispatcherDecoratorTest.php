@@ -6,7 +6,7 @@ namespace ddziaduch\OutboxPattern\Tests\Unit\Application;
 
 use ddziaduch\OutboxPattern\Application\EventDispatcherDecorator;
 use ddziaduch\OutboxPattern\Application\Port\EventScribe;
-use ddziaduch\OutboxPattern\Domain\Event;
+use ddziaduch\OutboxPattern\Domain\Event\Event;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 

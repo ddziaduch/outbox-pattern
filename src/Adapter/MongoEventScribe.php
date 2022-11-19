@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ddziaduch\OutboxPattern\Adapter;
 
 use ddziaduch\OutboxPattern\Application\Port\EventScribe;
-use ddziaduch\OutboxPattern\Domain\Event;
+use ddziaduch\OutboxPattern\Domain\Event\Event;
 use ddziaduch\OutboxPattern\Infrastructure\EventsMemoryCache;
 
 final class MongoEventScribe implements EventScribe

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Tests\Fake;
 
-use ddziaduch\OutboxPattern\Domain\AggregateRoot;
-use ddziaduch\OutboxPattern\Domain\AggregateRootId;
+use ddziaduch\OutboxPattern\Domain\Aggregate\AggregateRoot;
+use ddziaduch\OutboxPattern\Domain\ValueObject\AggregateRootId;
 
 class FakeAggregateRoot implements AggregateRoot
 {

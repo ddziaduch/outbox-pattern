@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Infrastructure;
 
-use ddziaduch\OutboxPattern\Domain\Event;
+use ddziaduch\OutboxPattern\Domain\Event\Event;
 use Traversable;
 
-/** @implements \IteratorAggregate<int, Event> */
+/** @implements \IteratorAggregate<int, \ddziaduch\OutboxPattern\Domain\Event\Event> */
 class EventsMemoryCache implements \IteratorAggregate
 {
-    /** @var array<Event> */
+    /** @var array<\ddziaduch\OutboxPattern\Domain\Event\Event> */
     private array $events = [];
 
     public function put(Event $event): void

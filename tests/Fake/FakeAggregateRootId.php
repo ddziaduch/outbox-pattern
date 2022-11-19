@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Tests\Fake;
 
-use ddziaduch\OutboxPattern\Domain\AggregateRootId;
+use ddziaduch\OutboxPattern\Domain\ValueObject\AggregateRootId;
 
 class FakeAggregateRootId implements AggregateRootId
 {
