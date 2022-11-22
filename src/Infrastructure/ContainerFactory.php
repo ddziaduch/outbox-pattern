@@ -11,7 +11,6 @@ use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\CreateProductHandler;
 use ddziaduch\OutboxPattern\Application\EventDispatcherDecorator;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;
-use ddziaduch\OutboxPattern\Application\Port\EventScribe;
 use ddziaduch\OutboxPattern\Application\Port\SaveProduct;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\ObjectManagerFactory;
 use Doctrine\Persistence\ObjectManager;
@@ -29,22 +28,19 @@ class ContainerFactory
     {
         $container = new Container();
 
-        $container->add(Client::class, static fn (): Client => new Client());
+        $container->addShared(Client::class, static fn (): Client => new Client('mongodb://mongo'));
 
-        $container->add(
+        $container->addShared(
             ObjectManager::class,
             static fn (): ObjectManager => (new ObjectManagerFactory())->create(
                 $container->get(Client::class),
             ),
         );
 
-        $container->add(EventScribe::class, MongoEventScribe::class)
-            ->addArgument(new EventsMemoryCache());
-
-        $container->add(
+        $container->addShared(
             EventDispatcherInterface::class,
             static fn (): EventDispatcherInterface => new EventDispatcherDecorator(
-                $container->get(EventScribe::class),
+                new MongoEventScribe(new EventsMemoryCache()),
                 new EventDispatcher(),
             ),
         );

@@ -25,8 +25,8 @@ class TacticianCommandBus implements CommandBus
         $this->bus = new \League\Tactician\CommandBus(
             [
                 new LockingMiddleware(),
-                $this->createCommandHandlerMiddleware($locator),
                 new DoctrineMongoODMFlushMiddleware($objectManager),
+                $this->createCommandHandlerMiddleware($locator),
             ]
         );
     }
