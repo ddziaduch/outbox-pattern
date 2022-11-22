@@ -9,8 +9,9 @@ use Doctrine\Persistence\ObjectManager;
 
 class OutboxProcessManager
 {
-    public function __construct(private readonly EventsMemoryCache $cache)
-    {
+    public function __construct(
+        private readonly EventsMemoryCache $cache,
+    ) {
     }
 
     public function __destruct()
@@ -23,18 +24,23 @@ class OutboxProcessManager
     }
 
     /** @param LifecycleEventArgs<ObjectManager> $args */
-    public function onPrePersist(LifecycleEventArgs $args): void
+    public function prePersist(LifecycleEventArgs $args): void
     {
-        $aggregate = $args->getObject();
+        $object = $args->getObject();
+        $objectReflection = new \ReflectionClass($object);
 
-        if (!$aggregate instanceof OutboxAware) {
+        if (!$objectReflection->hasProperty('outbox')) {
             return;
         }
 
-        foreach ($this->cache as $key => $event) {
-            if ($event->aggregateRootId()->value() === $aggregate->id()) {
-                $aggregate->getOutbox()->attach($event);
+        $outboxReflection = $objectReflection->getProperty('outbox');
+        $outbox = $outboxReflection->getValue($object);
+
+        if (is_array($outbox)) {
+            foreach ($this->cache as $event) {
+                $outbox[] = $event;
             }
+            $outboxReflection->setValue($object, $outbox);
         }
 
         $this->cache->flush();

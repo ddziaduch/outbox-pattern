@@ -23,10 +23,10 @@ class CreateProductHandler implements CommandHandler
 
         $product = Product::create(ProductId::new(), $command->name);
 
-        ($this->saveProduct)($product);
-
         foreach ($product->events() as $event) {
             $this->eventDispatcher->dispatch($event);
         }
+
+        ($this->saveProduct)($product);
     }
 }

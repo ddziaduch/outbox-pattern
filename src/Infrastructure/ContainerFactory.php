@@ -11,13 +11,13 @@ use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\CreateProductHandler;
 use ddziaduch\OutboxPattern\Application\EventDispatcherDecorator;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;
-use ddziaduch\OutboxPattern\Application\Port\SaveProduct;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\ObjectManagerFactory;
+use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Persistence\ObjectManager;
 use League\Container\Container;
 use League\Event\EventDispatcher;
 use League\Tactician\Container\ContainerLocator;
-use League\Tactician\Handler\Locator\HandlerLocator;
 use MongoDB\Client;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -30,45 +30,56 @@ class ContainerFactory
 
         $container->addShared(Client::class, static fn (): Client => new Client('mongodb://mongo'));
 
+        $container->addShared(EventManager::class);
+
         $container->addShared(
             ObjectManager::class,
             static fn (): ObjectManager => (new ObjectManagerFactory())->create(
                 $container->get(Client::class),
+                $container->get(EventManager::class),
             ),
         );
+
+        $container->addShared(EventsMemoryCache::class);
 
         $container->addShared(
             EventDispatcherInterface::class,
             static fn (): EventDispatcherInterface => new EventDispatcherDecorator(
-                new MongoEventScribe(new EventsMemoryCache()),
+                new MongoEventScribe($container->get(EventsMemoryCache::class)),
                 new EventDispatcher(),
             ),
         );
 
-        $container
-            ->add(SaveProduct::class, MongoSaveProduct::class)
-            ->addArgument(ObjectManager::class)
-        ;
+        $container->addShared(
+            CreateProductHandler::class,
+            static fn () => new CreateProductHandler(
+                new MongoSaveProduct($container->get(ObjectManager::class)),
+                $container->get(EventDispatcherInterface::class),
+            ),
+        );
 
-        $container
-            ->add(CreateProductHandler::class)
-            ->addArgument(SaveProduct::class)
-            ->addArgument(EventDispatcherInterface::class)
-        ;
+        $container->addShared(
+            CommandBus::class,
+            static fn (): TacticianCommandBus => new TacticianCommandBus(
+                $container->get(ObjectManager::class),
+                new ContainerLocator($container, [
+                    CreateProductCommand::class => CreateProductHandler::class,
+                ]),
+            )
+        );
 
-        $container
-            ->add(HandlerLocator::class, ContainerLocator::class)
-            ->addArgument($container)
-            ->addArgument([
-                CreateProductCommand::class => CreateProductHandler::class,
-            ])
-        ;
+        $container->addShared(
+            OutboxProcessManager::class,
+            static fn(): OutboxProcessManager => new OutboxProcessManager(
+                $container->get(EventsMemoryCache::class),
+            ),
+        );
 
-        $container
-            ->add(CommandBus::class, TacticianCommandBus::class)
-            ->addArgument(ObjectManager::class)
-            ->addArgument(HandlerLocator::class)
-        ;
+        $eventManager = $container->get(EventManager::class);
+        assert($eventManager instanceof EventManager);
+
+        $outboxProcessManager = $container->get(OutboxProcessManager::class);
+        $eventManager->addEventListener([Events::prePersist], $outboxProcessManager);
 
         return $container;
     }
