@@ -46,7 +46,6 @@ class ContainerFactory
             EventDispatcherInterface::class,
             static fn (): EventDispatcherInterface => new EventDispatcherDecorator(
                 new MongoEventScribe($container->get(EventsMemoryCache::class)),
-                new EventDispatcher(),
             ),
         );
 

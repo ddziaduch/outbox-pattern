@@ -21,7 +21,7 @@ class CreateProductHandler implements CommandHandler
     {
         assert($command instanceof CreateProductCommand);
 
-        $product = Product::create(ProductId::new(), $command->name);
+        $product = Product::create($command->name);
 
         foreach ($product->events() as $event) {
             $this->eventDispatcher->dispatch($event);

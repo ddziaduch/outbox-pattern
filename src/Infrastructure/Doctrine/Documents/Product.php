@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents;
 
-use ddziaduch\OutboxPattern\Domain\Event\Event;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
@@ -12,7 +11,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 #[Document(collection: 'products')]
 class Product
 {
-    /** @var array<Event> */
+    /** @var string[] */
     #[Field(type: 'collection')]
     public array $outbox = [];
 

@@ -19,7 +19,7 @@ class MongoSaveProduct implements SaveProduct
     {
         $this->objectManager->persist(
             new \ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product(
-                $product->id()->value(),
+                $product->id->value,
                 $product->name,
             )
         );

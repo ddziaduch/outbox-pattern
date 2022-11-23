@@ -20,7 +20,7 @@ class ObjectManagerFactory
         $config->setProxyNamespace('Proxies');
         $config->setHydratorDir(__DIR__ . '/Hydrators');
         $config->setHydratorNamespace('Hydrators');
-        $config->setDefaultDB('doctrine_odm');
+        $config->setDefaultDB('outbox-pattern');
         $config->setMetadataDriverImpl(
             AttributeDriver::create(__DIR__ . '/Documents'),
         );

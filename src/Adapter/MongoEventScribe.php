@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ddziaduch\OutboxPattern\Adapter;
 
 use ddziaduch\OutboxPattern\Application\Port\EventScribe;
-use ddziaduch\OutboxPattern\Domain\Event\Event;
 use ddziaduch\OutboxPattern\Infrastructure\EventsMemoryCache;
 
 final class MongoEventScribe implements EventScribe
@@ -15,7 +14,7 @@ final class MongoEventScribe implements EventScribe
     ) {
     }
 
-    public function write(Event $event): void
+    public function write(object $event): void
     {
         $this->cache->put($event);
     }

@@ -6,6 +6,7 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class OutboxProcessManager
 {
@@ -38,7 +39,7 @@ class OutboxProcessManager
 
         if (is_array($outbox)) {
             foreach ($this->cache as $event) {
-                $outbox[] = $event;
+                $outbox[] = serialize($event);
             }
             $outboxReflection->setValue($object, $outbox);
         }
