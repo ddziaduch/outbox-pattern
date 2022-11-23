@@ -8,6 +8,6 @@ use ddziaduch\OutboxPattern\Domain\Event\Event;
 
 interface EventReader
 {
-    /** @return iterable<\ddziaduch\OutboxPattern\Domain\Event\Event> */
+    /** @return iterable<Event> */
     public function read(): iterable;
 }

@@ -2,21 +2,20 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Application;
+namespace ddziaduch\OutboxPattern\Infrastructure;
 
-use ddziaduch\OutboxPattern\Application\Port\EventScribe;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class EventDispatcherDecorator implements EventDispatcherInterface
 {
     public function __construct(
-        private readonly EventScribe $eventScribe,
+        private readonly EventsMemoryCache $cache,
     ) {
     }
 
     public function dispatch(object $event): object
     {
-        $this->eventScribe->write($event);
+        $this->cache->put($event);
 
         return $event;
     }

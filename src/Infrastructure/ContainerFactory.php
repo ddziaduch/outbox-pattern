@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Infrastructure;
 
-use ddziaduch\OutboxPattern\Adapter\MongoEventScribe;
 use ddziaduch\OutboxPattern\Adapter\MongoSaveProduct;
 use ddziaduch\OutboxPattern\Adapter\TacticianCommandBus;
 use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\CreateProductHandler;
-use ddziaduch\OutboxPattern\Application\EventDispatcherDecorator;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;
-use ddziaduch\OutboxPattern\Infrastructure\Doctrine\ObjectManagerFactory;
+use ddziaduch\OutboxPattern\Infrastructure\Doctrine\DocumentManagerFactory;
+use ddziaduch\OutboxPattern\Infrastructure\Doctrine\TacticianCommandBusFactory;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Persistence\ObjectManager;
 use League\Container\Container;
-use League\Event\EventDispatcher;
 use League\Tactician\Container\ContainerLocator;
 use MongoDB\Client;
 use Psr\Container\ContainerInterface;
@@ -34,7 +32,7 @@ class ContainerFactory
 
         $container->addShared(
             ObjectManager::class,
-            static fn (): ObjectManager => (new ObjectManagerFactory())->create(
+            static fn (): ObjectManager => (new DocumentManagerFactory())->create(
                 $container->get(Client::class),
                 $container->get(EventManager::class),
             ),
@@ -45,7 +43,7 @@ class ContainerFactory
         $container->addShared(
             EventDispatcherInterface::class,
             static fn (): EventDispatcherInterface => new EventDispatcherDecorator(
-                new MongoEventScribe($container->get(EventsMemoryCache::class)),
+                $container->get(EventsMemoryCache::class),
             ),
         );
 
@@ -60,10 +58,12 @@ class ContainerFactory
         $container->addShared(
             CommandBus::class,
             static fn (): TacticianCommandBus => new TacticianCommandBus(
-                $container->get(ObjectManager::class),
-                new ContainerLocator($container, [
-                    CreateProductCommand::class => CreateProductHandler::class,
-                ]),
+                (new TacticianCommandBusFactory())->create(
+                    $container->get(ObjectManager::class),
+                    new ContainerLocator($container, [
+                        CreateProductCommand::class => CreateProductHandler::class,
+                    ]),
+                ),
             )
         );
 

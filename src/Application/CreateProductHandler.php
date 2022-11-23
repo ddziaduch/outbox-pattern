@@ -6,10 +6,9 @@ namespace ddziaduch\OutboxPattern\Application;
 
 use ddziaduch\OutboxPattern\Application\Port\SaveProduct;
 use ddziaduch\OutboxPattern\Domain\Aggregate\Product;
-use ddziaduch\OutboxPattern\Domain\ValueObject\ProductId;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-class CreateProductHandler implements CommandHandler
+class CreateProductHandler
 {
     public function __construct(
         private readonly SaveProduct $saveProduct,
@@ -17,10 +16,8 @@ class CreateProductHandler implements CommandHandler
     ) {
     }
 
-    public function __invoke(Command $command): void
+    public function __invoke(CreateProductCommand $command): void
     {
-        assert($command instanceof CreateProductCommand);
-
         $product = Product::create($command->name);
 
         foreach ($product->events() as $event) {
