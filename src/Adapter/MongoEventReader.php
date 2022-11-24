@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Adapter;
 
-use ddziaduch\OutboxPattern\Application\Port\EventReader;
-use ddziaduch\OutboxPattern\Infrastructure\OutboxAware;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareRepositories;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 
-final class MongoEventReader implements EventReader
+final class MongoEventReader
 {
     public function __construct(
         private readonly OutboxAwareRepositories $repositories,
@@ -18,26 +16,30 @@ final class MongoEventReader implements EventReader
     ) {
     }
 
+    /** @return iterable<object> */
     public function read(): iterable
     {
-        /** @var ObjectRepository<OutboxAware> $repository */
+        /** @var ObjectRepository<object> $repository */
         foreach ($this->repositories as $repository) {
             $objects = $repository->findBy(['outbox' => ['$not' => ['$size' => 0]]]);
             foreach ($objects as $object) {
-                if (!$object instanceof OutboxAware) {
-                    throw new \LogicException('Expected repository to return collection of ' . OutboxAware::class);
+                if (!property_exists($object, 'outbox')) {
+                    throw new \LogicException('Expected object to have property outbox');
                 }
 
-                foreach (clone $object->getOutbox() as $event) {
-                    try {
-                        yield $event;
-                        $object->getOutbox()->detach($event);
-                        $this->objectManager->persist($object);
-                    } catch (\Throwable $throwable) {
-                        // DLQ handling could be added here in future
-                    }
+                if (!is_array($object->outbox)) {
+                    throw new \LogicException('Expected objects outbox to be an array');
                 }
+
+                foreach ($object->outbox as $event) {
+                    yield $event;
+                }
+
+                $object->outbox = [];
+                $this->objectManager->persist($object);
             }
         }
+
+        $this->objectManager->flush();
     }
 }

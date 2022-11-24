@@ -21,8 +21,14 @@ class CreateProductTest extends TestCase
         parent::setUp();
 
         $container = (new ContainerFactory())->create();
-        $this->commandBus = $container->get(CommandBus::class);
-        $this->objectManager = $container->get(ObjectManager::class);
+
+        $commandBus = $container->get(CommandBus::class);
+        assert($commandBus instanceof CommandBus);
+        $this->commandBus = $commandBus;
+
+        $objectManager = $container->get(ObjectManager::class);
+        assert($objectManager instanceof ObjectManager);
+        $this->objectManager = $objectManager;
 
         $this->removeAllProductsFromDb();
     }

@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use Traversable;
 
-/** @implements \IteratorAggregate<ObjectRepository<OutboxAware>> */
+/** @implements \IteratorAggregate<ObjectRepository<object>> */
 class OutboxAwareRepositories implements \IteratorAggregate
 {
     public function __construct(
@@ -17,10 +17,10 @@ class OutboxAwareRepositories implements \IteratorAggregate
     ) {
     }
 
-    /** @return Traversable<ObjectRepository<OutboxAware>> */
+    /** @return Traversable<ObjectRepository<object>> */
     public function getIterator(): Traversable
     {
-        foreach ($this->classMetadata->all() as $metadata) {
+        foreach ($this->classMetadata as $metadata) {
             yield $this->objectManager->getRepository($metadata->getName());
         }
     }

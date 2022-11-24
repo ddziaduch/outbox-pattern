@@ -6,27 +6,36 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
+use Traversable;
 
-// TODO: cover with test
-class OutboxAwareClassMetadata
+/** @implements \IteratorAggregate<ClassMetadata<object>> */
+class OutboxAwareClassMetadata implements \IteratorAggregate
 {
     public function __construct(private readonly ObjectManager $objectManager)
     {
     }
 
-    /** @return iterable<ClassMetadata<OutboxAware>> */
-    public function all(): iterable
+    /** @return Traversable<ClassMetadata<object>> */
+    public function getIterator(): Traversable
     {
-        /** @var array<ClassMetadata<OutboxAware>> $metadata */
-        $metadata = array_filter(
-            $this->objectManager->getMetadataFactory()->getAllMetadata(),
-            static fn(ClassMetadata $metadata): bool => is_a(
-                $metadata->getName(),
-                OutboxAware::class,
-                true,
-            ),
-        );
+        foreach ($this->objectManager->getMetadataFactory()->getAllMetadata() as $metadata) {
+            $objectClassName = $metadata->getName();
+            $objectReflectionClass = new \ReflectionClass($objectClassName);
 
-        return $metadata;
+            if (!$objectReflectionClass->hasMethod('outbox')) {
+                continue;
+            }
+
+            $outboxMethodReflection = $objectReflectionClass->getMethod('outbox');
+            $returnType = $outboxMethodReflection->getReturnType();
+
+            if (
+                $returnType instanceof \ReflectionNamedType
+                && $returnType->allowsNull() === false
+                && $returnType->getName() === 'array'
+            ) {
+                yield $metadata;
+            }
+        }
     }
 }

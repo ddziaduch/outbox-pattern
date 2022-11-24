@@ -32,9 +32,9 @@ class ContainerFactory
 
         $container->addShared(
             ObjectManager::class,
-            static fn (): ObjectManager => (new DocumentManagerFactory())->create(
-                $container->get(Client::class),
-                $container->get(EventManager::class),
+            fn (): ObjectManager => (new DocumentManagerFactory())->create(
+                $this->get($container, Client::class),
+                $this->get($container, EventManager::class),
             ),
         );
 
@@ -42,24 +42,26 @@ class ContainerFactory
 
         $container->addShared(
             EventDispatcherInterface::class,
-            static fn (): EventDispatcherInterface => new EventDispatcherDecorator(
-                $container->get(EventsMemoryCache::class),
-            ),
+            function () use ($container): EventDispatcherInterface {
+                $cache = $this->get($container, EventsMemoryCache::class);
+
+                return new EventDispatcherDecorator($cache);
+            },
         );
 
         $container->addShared(
             CreateProductHandler::class,
-            static fn () => new CreateProductHandler(
-                new MongoSaveProduct($container->get(ObjectManager::class)),
-                $container->get(EventDispatcherInterface::class),
+            fn () => new CreateProductHandler(
+                new MongoSaveProduct($this->get($container, ObjectManager::class)),
+                $this->get($container, EventDispatcherInterface::class),
             ),
         );
 
         $container->addShared(
             CommandBus::class,
-            static fn (): TacticianCommandBus => new TacticianCommandBus(
+            fn (): TacticianCommandBus => new TacticianCommandBus(
                 (new TacticianCommandBusFactory())->create(
-                    $container->get(ObjectManager::class),
+                    $this->get($container, ObjectManager::class),
                     new ContainerLocator($container, [
                         CreateProductCommand::class => CreateProductHandler::class,
                     ]),
@@ -69,17 +71,30 @@ class ContainerFactory
 
         $container->addShared(
             OutboxProcessManager::class,
-            static fn(): OutboxProcessManager => new OutboxProcessManager(
-                $container->get(EventsMemoryCache::class),
+            fn (): OutboxProcessManager => new OutboxProcessManager(
+                $this->get($container, EventsMemoryCache::class),
             ),
         );
 
-        $eventManager = $container->get(EventManager::class);
-        assert($eventManager instanceof EventManager);
-
-        $outboxProcessManager = $container->get(OutboxProcessManager::class);
+        $eventManager = $this->get($container, EventManager::class);
+        $outboxProcessManager = $this->get($container, OutboxProcessManager::class);
         $eventManager->addEventListener([Events::prePersist], $outboxProcessManager);
 
         return $container;
+    }
+
+    /**
+     * @template T
+     *
+     * @param class-string<T> $className
+     *
+     * @return T
+     */
+    private function get(ContainerInterface $container, string $className): mixed
+    {
+        $object = $container->get($className);
+        assert($object instanceof $className);
+
+        return $object;
     }
 }

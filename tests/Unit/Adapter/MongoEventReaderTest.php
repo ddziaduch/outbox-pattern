@@ -6,10 +6,6 @@ namespace ddziaduch\OutboxPattern\Tests\Unit\Adapter;
 
 use ddziaduch\OutboxPattern\Adapter\MongoEventReader;
 use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareRepositories;
-use ddziaduch\OutboxPattern\Tests\Fake\FakeAggregateRoot;
-use ddziaduch\OutboxPattern\Tests\Fake\FakeAggregateRootId;
-use ddziaduch\OutboxPattern\Tests\Fake\FakeEvent;
-use ddziaduch\OutboxPattern\Tests\Fake\FakeObjectWithOutbox;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
@@ -18,35 +14,37 @@ class MongoEventReaderTest extends TestCase
 {
     public function testReading(): void
     {
+        $objectFactory = static fn (object ...$outbox) => new class (...$outbox) {
+            /** @var object[] */
+            public array $outbox;
 
-        $object1 = new FakeObjectWithOutbox(1);
-        $object1->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(1))));
-        $object1->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(1))));
+            public function __construct(object ...$outbox)
+            {
+                $this->outbox = $outbox;
+            }
+        };
 
-        $object2 = new FakeObjectWithOutbox(2);
-        $object2->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(2))));
-        $object2->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(2))));
-        $object2->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(2))));
+        $repositoryFactory = function (object ...$objects) {
+            $repository = $this->createStub(ObjectRepository::class);
+            $repository->method('findBy')->willReturn($objects);
 
-        $object3 = new FakeObjectWithOutbox(3);
-        $object3->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(3))));
-        $object3->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(3))));
-        $object3->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(3))));
-        $object3->getOutbox()->attach(new FakeEvent(new FakeAggregateRoot(new FakeAggregateRootId(3))));
+            return $repository;
+        };
 
-        $repository1 = $this->createStub(ObjectRepository::class);
-        $repository1->method('findBy')->willReturn([$object1, $object2]);
+        $object1 = $objectFactory(new \stdClass(), new \stdClass());
+        $object2 = $objectFactory(new \stdClass(), new \stdClass(), new \stdClass());
+        $object3 = $objectFactory(new \stdClass(), new \stdClass(), new \stdClass(), new \stdClass());
 
-        $repository2 = $this->createStub(ObjectRepository::class);
-        $repository2->method('findBy')->willReturn([$object3]);
+        $repository1 = $repositoryFactory($object1, $object2);
+        $repository2 = $repositoryFactory($object3);
 
         $repositories = $this->createStub(OutboxAwareRepositories::class);
         $repositories->method('getIterator')->willReturn(new \ArrayIterator([$repository1, $repository2]));
 
         $expectedEvents = [
-            ...$object1->getOutbox(),
-            ...$object2->getOutbox(),
-            ...$object3->getOutbox(),
+            ...$object1->outbox,
+            ...$object2->outbox,
+            ...$object3->outbox,
         ];
 
         $reader = new MongoEventReader($repositories, $this->createStub(ObjectManager::class));

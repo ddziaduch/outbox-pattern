@@ -8,6 +8,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Mapping\Driver\AttributeDriver;
+use Doctrine\Persistence\Mapping\Driver\MappingDriver;
 use MongoDB\Client;
 
 class DocumentManagerFactory
@@ -20,9 +21,10 @@ class DocumentManagerFactory
         $config->setHydratorDir(__DIR__ . '/Hydrators');
         $config->setHydratorNamespace('Hydrators');
         $config->setDefaultDB('outbox-pattern');
-        $config->setMetadataDriverImpl(
-            AttributeDriver::create(__DIR__ . '/Documents'),
-        );
+
+        $driverImpl = AttributeDriver::create(__DIR__ . '/Documents');
+        assert($driverImpl instanceof MappingDriver);
+        $config->setMetadataDriverImpl($driverImpl);
 
         return DocumentManager::create($client, $config, $eventManager);
     }
