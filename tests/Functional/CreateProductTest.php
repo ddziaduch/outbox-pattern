@@ -11,6 +11,10 @@ use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
+/** @covers \ddziaduch\OutboxPattern\Application\CreateProductCommand */
+/** @covers \ddziaduch\OutboxPattern\Application\CreateProductHandler */
+/** @covers \ddziaduch\OutboxPattern\Infrastructure\EventDispatcherDecorator */
+/** @covers \ddziaduch\OutboxPattern\Infrastructure\OutboxProcessManager */
 class CreateProductTest extends TestCase
 {
     private ObjectManager $objectManager;
