@@ -22,12 +22,12 @@ class OutboxAwareClassMetadata implements \IteratorAggregate
             $objectClassName = $metadata->getName();
             $objectReflectionClass = new \ReflectionClass($objectClassName);
 
-            if (!$objectReflectionClass->hasMethod('outbox')) {
+            if (!$objectReflectionClass->hasProperty('outbox')) {
                 continue;
             }
 
-            $outboxMethodReflection = $objectReflectionClass->getMethod('outbox');
-            $returnType = $outboxMethodReflection->getReturnType();
+            $outboxMethodReflection = $objectReflectionClass->getProperty('outbox');
+            $returnType = $outboxMethodReflection->getType();
 
             if (
                 $returnType instanceof \ReflectionNamedType

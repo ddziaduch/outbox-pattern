@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Infrastructure;
 
+use ddziaduch\OutboxPattern\Adapter\MongoEventReader;
 use ddziaduch\OutboxPattern\Adapter\MongoSaveProduct;
 use ddziaduch\OutboxPattern\Adapter\TacticianCommandBus;
 use ddziaduch\OutboxPattern\Application\CreateProductCommand;
@@ -70,14 +71,37 @@ class ContainerFactory
         );
 
         $container->addShared(
-            OutboxProcessManager::class,
-            fn (): OutboxProcessManager => new OutboxProcessManager(
+            OutboxRelay::class,
+            fn (): OutboxRelay => new OutboxRelay(
                 $this->get($container, EventsMemoryCache::class),
             ),
         );
 
+        $container->addShared(
+            OutboxAwareClassMetadata::class,
+            fn (): OutboxAwareClassMetadata => new OutboxAwareClassMetadata(
+                $this->get($container, ObjectManager::class),
+            ),
+        );
+
+        $container->addShared(
+            OutboxAwareRepositories::class,
+            fn (): OutboxAwareRepositories => new OutboxAwareRepositories(
+                $this->get($container, ObjectManager::class),
+                $this->get($container, OutboxAwareClassMetadata::class),
+            ),
+        );
+
+        $container->addShared(
+            MongoEventReader::class,
+            fn (): MongoEventReader => new MongoEventReader(
+                $this->get($container, OutboxAwareRepositories::class),
+                $this->get($container, ObjectManager::class),
+            ),
+        );
+
         $eventManager = $this->get($container, EventManager::class);
-        $outboxProcessManager = $this->get($container, OutboxProcessManager::class);
+        $outboxProcessManager = $this->get($container, OutboxRelay::class);
         $eventManager->addEventListener([Events::prePersist], $outboxProcessManager);
 
         return $container;
