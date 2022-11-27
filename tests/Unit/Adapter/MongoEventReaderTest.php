@@ -10,6 +10,7 @@ use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
 
+/** @covers \ddziaduch\OutboxPattern\Adapter\MongoEventReader */
 class MongoEventReaderTest extends TestCase
 {
     public function testReading(): void
