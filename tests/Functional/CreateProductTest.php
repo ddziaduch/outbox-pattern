@@ -7,6 +7,7 @@ namespace ddziaduch\OutboxPattern\Tests\Functional;
 use ddziaduch\OutboxPattern\Adapter\MongoEventReader;
 use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;
+use ddziaduch\OutboxPattern\Domain\Event\ProductCreated;
 use ddziaduch\OutboxPattern\Infrastructure\ContainerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product;
 use Doctrine\Persistence\ObjectManager;
@@ -46,15 +47,26 @@ class CreateProductTest extends TestCase
 
     public function testCreationPutsEventsToOutbox(): void
     {
-        $this->commandBus->execute(new CreateProductCommand('test'));
+        $products = ['first', 'second'];
+        foreach ($products as $product) {
+            $this->commandBus->execute(new CreateProductCommand($product));
+        }
+
         self::assertCount(
-            1,
+            2,
             $this->objectManager
                 ->getRepository(Product::class)
                 ->findAll(),
         );
+
         $events = $this->eventReader->read();
-        self::assertCount(1, $events);
+        self::assertCount(2, $events);
+
+        /** @var ProductCreated $event */
+        foreach ($events as $key => $event) {
+            self::assertInstanceOf(ProductCreated::class, $event);
+            self::assertSame($products[$key], $event->productName);
+        }
     }
 
     private function removeAllProductsFromDb(): void

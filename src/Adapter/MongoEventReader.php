@@ -16,9 +16,11 @@ final class MongoEventReader
     ) {
     }
 
-    /** @return iterable<object> */
-    public function read(): iterable
+    /** @return object[] */
+    public function read(): array
     {
+        $events = [];
+
         /** @var ObjectRepository<object> $repository */
         foreach ($this->repositories as $repository) {
             $objects = $repository->findBy(['outbox' => ['$not' => ['$size' => 0]]]);
@@ -31,8 +33,14 @@ final class MongoEventReader
                     throw new \LogicException('Expected objects outbox to be an array');
                 }
 
-                foreach ($object->outbox as $event) {
-                    yield $event;
+                foreach ($object->outbox as $serializedEvent) {
+                    $event = unserialize($serializedEvent);
+
+                    if (!is_object($event)) {
+                        throw new \LogicException('Expected event to be an object');
+                    }
+
+                    $events[] = $event;
                 }
 
                 $object->outbox = [];
@@ -41,5 +49,7 @@ final class MongoEventReader
         }
 
         $this->objectManager->flush();
+
+        return $events;
     }
 }

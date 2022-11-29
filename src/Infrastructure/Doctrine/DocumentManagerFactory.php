@@ -16,9 +16,9 @@ class DocumentManagerFactory
     public function create(Client $client, EventManager $eventManager): DocumentManager
     {
         $config = new Configuration();
-        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setProxyDir(__DIR__ . '/../../../var/Doctrine/Proxies');
         $config->setProxyNamespace('Proxies');
-        $config->setHydratorDir(__DIR__ . '/Hydrators');
+        $config->setHydratorDir(__DIR__ . '/../../../var/Doctrine/Hydrators');
         $config->setHydratorNamespace('Hydrators');
         $config->setDefaultDB('outbox-pattern');
 
