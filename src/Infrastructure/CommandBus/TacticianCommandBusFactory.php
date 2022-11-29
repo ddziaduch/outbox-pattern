@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Infrastructure\Doctrine;
+namespace ddziaduch\OutboxPattern\Infrastructure\CommandBus;
 
-use ddziaduch\OutboxPattern\Infrastructure\DoctrineMongoODMFlushMiddleware;
 use Doctrine\Persistence\ObjectManager;
 use League\Tactician\CommandBus;
 use League\Tactician\Handler\CommandHandlerMiddleware;

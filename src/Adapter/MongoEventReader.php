@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Adapter;
 
-use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareRepositories;
+use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareRepositories;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 

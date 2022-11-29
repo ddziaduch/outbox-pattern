@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ddziaduch\OutboxPattern\Tests\Unit\Adapter;
 
 use ddziaduch\OutboxPattern\Adapter\MongoEventReader;
-use ddziaduch\OutboxPattern\Infrastructure\OutboxAwareRepositories;
+use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareRepositories;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
