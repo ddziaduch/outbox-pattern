@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Tests\Functional;
 
-use ddziaduch\OutboxPattern\Adapter\MongoEventReader;
 use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;
 use ddziaduch\OutboxPattern\Domain\Event\ProductCreated;
 use ddziaduch\OutboxPattern\Infrastructure\ContainerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product;
+use ddziaduch\OutboxPattern\Infrastructure\MongoEventReader;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 /** @covers \ddziaduch\OutboxPattern\Application\CreateProductHandler */
 /** @covers \ddziaduch\OutboxPattern\Infrastructure\EventDispatcherDecorator */
 /** @covers \ddziaduch\OutboxPattern\Infrastructure\OutboxRelay */
-/** @covers \ddziaduch\OutboxPattern\Adapter\MongoEventReader */
+/** @covers \ddziaduch\OutboxPattern\Infrastructure\MongoEventReader */
 class CreateProductTest extends TestCase
 {
     private ObjectManager $objectManager;

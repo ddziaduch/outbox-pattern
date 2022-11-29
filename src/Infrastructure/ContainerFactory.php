@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Infrastructure;
 
-use ddziaduch\OutboxPattern\Adapter\MongoEventReader;
 use ddziaduch\OutboxPattern\Adapter\MongoSaveProduct;
 use ddziaduch\OutboxPattern\Adapter\TacticianCommandBus;
 use ddziaduch\OutboxPattern\Application\CreateProductCommand;

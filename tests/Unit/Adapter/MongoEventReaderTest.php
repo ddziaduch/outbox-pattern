@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Tests\Unit\Adapter;
 
-use ddziaduch\OutboxPattern\Adapter\MongoEventReader;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareRepositories;
+use ddziaduch\OutboxPattern\Infrastructure\MongoEventReader;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
 
-/** @covers \ddziaduch\OutboxPattern\Adapter\MongoEventReader */
+/** @covers \ddziaduch\OutboxPattern\Infrastructure\MongoEventReader */
 class MongoEventReaderTest extends TestCase
 {
     public function testReading(): void
