@@ -72,8 +72,8 @@ class ContainerFactory
         );
 
         $container->addShared(
-            OutboxRelay::class,
-            fn (): OutboxRelay => new OutboxRelay(
+            OutboxProcessManager::class,
+            fn (): OutboxProcessManager => new OutboxProcessManager(
                 $this->get($container, EventsMemoryCache::class),
             ),
         );
@@ -102,7 +102,7 @@ class ContainerFactory
         );
 
         $eventManager = $this->get($container, EventManager::class);
-        $outboxProcessManager = $this->get($container, OutboxRelay::class);
+        $outboxProcessManager = $this->get($container, OutboxProcessManager::class);
         $eventManager->addEventListener([Events::prePersist], $outboxProcessManager);
 
         return $container;

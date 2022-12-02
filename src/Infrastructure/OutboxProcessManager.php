@@ -7,7 +7,7 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\ObjectManager;
 
-class OutboxRelay
+class OutboxProcessManager
 {
     public function __construct(
         private readonly EventsMemoryCache $cache,

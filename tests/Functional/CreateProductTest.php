@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 /** @covers \ddziaduch\OutboxPattern\Application\CreateProductCommand */
 /** @covers \ddziaduch\OutboxPattern\Application\CreateProductHandler */
 /** @covers \ddziaduch\OutboxPattern\Infrastructure\EventDispatcherDecorator */
-/** @covers \ddziaduch\OutboxPattern\Infrastructure\OutboxRelay */
+/** @covers \ddziaduch\OutboxPattern\Infrastructure\OutboxProcessManager */
 /** @covers \ddziaduch\OutboxPattern\Infrastructure\MongoEventReader */
 class CreateProductTest extends TestCase
 {
