@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Presentation;
 
-use ddziaduch\OutboxPattern\Application\CreateProductCommand as ApplicationCommand;
+use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\Command as CliCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'create-product')]
-class CreateProductCommand extends Command
+class CreateProductCliCommand extends CliCommand
 {
     public function __construct(
         private readonly CommandBus $commandBus,
@@ -30,18 +30,18 @@ class CreateProductCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $name = $input->getArgument('name');
+
         try {
-            $this->commandBus->execute(
-                new ApplicationCommand(
-                    $input->getArgument('name'),
-                ),
-            );
+            $this->commandBus->execute(new CreateProductCommand($name));
         } catch (\Throwable $exception) {
             $output->writeln($exception->getMessage());
 
-            return Command::FAILURE;
+            return CliCommand::FAILURE;
         }
 
-        return Command::SUCCESS;
+        $output->writeln('Product with name ' . $name . ' has been created!');
+
+        return CliCommand::SUCCESS;
     }
 }
