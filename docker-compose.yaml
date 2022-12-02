@@ -1,8 +1,15 @@
 services:
   mongo:
     image: mongo
+    ports:
+      - 27017:27017
   app:
     build:
       dockerfile: Dockerfile
     depends_on:
       - mongo
+    environment:
+      - WAIT_HOSTS=mongo:27017
+    volumes:
+      - ".:/opt/project"
+    working_dir: "/opt/project"

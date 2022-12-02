@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install libzip-dev -y
 RUN docker-php-ext-configure zip && docker-php-ext-install zip && docker-php-ext-enable zip
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.8.0/wait /wait
 RUN chmod +x /wait
-COPY . /opt/project
-WORKDIR /opt/project
-ENV WAIT_HOSTS=mongo:27017
-ENTRYPOINT /wait && vendor/bin/phpunit
+COPY docker-entrypoint.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["bash"]
