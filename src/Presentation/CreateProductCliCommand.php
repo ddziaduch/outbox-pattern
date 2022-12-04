@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'create-product')]
-class CreateProductCliCommand extends CliCommand
+final class CreateProductCliCommand extends CliCommand
 {
     public function __construct(
         private readonly CommandBus $commandBus,

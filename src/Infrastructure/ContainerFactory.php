@@ -13,10 +13,13 @@ use ddziaduch\OutboxPattern\Infrastructure\CommandBus\TacticianCommandBusFactory
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\DocumentManagerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareClassMetadata;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareRepositories;
+use ddziaduch\OutboxPattern\Presentation\CreateProductCliCommand;
+use ddziaduch\OutboxPattern\Presentation\DispatchEventsCliCommand;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Persistence\ObjectManager;
 use League\Container\Container;
+use League\Event\EventDispatcher;
 use League\Tactician\Container\ContainerLocator;
 use MongoDB\Client;
 use Psr\Container\ContainerInterface;
@@ -44,7 +47,12 @@ class ContainerFactory
 
         $container->addShared(
             EventDispatcherInterface::class,
-            function () use ($container): EventDispatcherInterface {
+            new EventDispatcher(),
+        );
+
+        $container->addShared(
+            EventDispatcherDecorator::class,
+            function () use ($container): EventDispatcherDecorator {
                 $cache = $this->get($container, EventsMemoryCache::class);
 
                 return new EventDispatcherDecorator($cache);
@@ -55,7 +63,7 @@ class ContainerFactory
             CreateProductHandler::class,
             fn () => new CreateProductHandler(
                 new MongoSaveProduct($this->get($container, ObjectManager::class)),
-                $this->get($container, EventDispatcherInterface::class),
+                $this->get($container, EventDispatcherDecorator::class),
             ),
         );
 
@@ -98,6 +106,21 @@ class ContainerFactory
             fn (): MongoEventReader => new MongoEventReader(
                 $this->get($container, OutboxAwareRepositories::class),
                 $this->get($container, ObjectManager::class),
+            ),
+        );
+
+        $container->add(
+            CreateProductCliCommand::class,
+            fn(): CreateProductCliCommand => new CreateProductCliCommand(
+                $this->get($container, CommandBus::class),
+            ),
+        );
+
+        $container->add(
+            DispatchEventsCliCommand::class,
+            fn(): DispatchEventsCliCommand => new DispatchEventsCliCommand(
+                $this->get($container, MongoEventReader::class),
+                $this->get($container, EventDispatcherInterface::class),
             ),
         );
 
