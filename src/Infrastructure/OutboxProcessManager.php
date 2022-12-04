@@ -27,14 +27,12 @@ class OutboxProcessManager
     public function prePersist(LifecycleEventArgs $args): void
     {
         $object = $args->getObject();
-        $objectReflection = new \ReflectionClass($object);
 
-        if (!$objectReflection->hasProperty('outbox')) {
+        if (!property_exists($object, 'outbox')) {
             return;
         }
 
-        $outboxReflection = $objectReflection->getProperty('outbox');
-        $outbox = $outboxReflection->getValue($object);
+        $outbox = $object->outbox;
 
         if (!is_array($outbox)) {
             return;
@@ -43,7 +41,8 @@ class OutboxProcessManager
         foreach ($this->cache as $event) {
             $outbox[] = serialize($event);
         }
-        $outboxReflection->setValue($object, $outbox);
+
+        $object->outbox = $outbox;
 
         $this->cache->flush();
     }
