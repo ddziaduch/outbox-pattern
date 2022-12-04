@@ -24,6 +24,7 @@ use League\Tactician\Container\ContainerLocator;
 use MongoDB\Client;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Console\Application;
 
 class ContainerFactory
 {
@@ -110,18 +111,24 @@ class ContainerFactory
         );
 
         $container->add(
-            CreateProductCliCommand::class,
-            fn(): CreateProductCliCommand => new CreateProductCliCommand(
-                $this->get($container, CommandBus::class),
-            ),
-        );
+            Application::class,
+            function () use ($container): Application {
+                $app = new Application();
 
-        $container->add(
-            DispatchEventsCliCommand::class,
-            fn(): DispatchEventsCliCommand => new DispatchEventsCliCommand(
-                $this->get($container, MongoEventReader::class),
-                $this->get($container, EventDispatcherInterface::class),
-            ),
+                $app->add(
+                    new CreateProductCliCommand(
+                          $this->get($container, CommandBus::class),
+                    ),
+                );
+                $app->add(
+                    new DispatchEventsCliCommand(
+                        $this->get($container, MongoEventReader::class),
+                        $this->get($container, EventDispatcherInterface::class),
+                    ),
+                );
+
+                return $app;
+            },
         );
 
         $eventManager = $this->get($container, EventManager::class);
