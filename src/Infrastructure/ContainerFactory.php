@@ -9,6 +9,8 @@ use ddziaduch\OutboxPattern\Adapter\TacticianCommandBus;
 use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\CreateProductHandler;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;
+use ddziaduch\OutboxPattern\Application\ProductCreatedListener;
+use ddziaduch\OutboxPattern\Domain\Event\ProductCreated;
 use ddziaduch\OutboxPattern\Infrastructure\CommandBus\TacticianCommandBusFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\DocumentManagerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareClassMetadata;
@@ -134,6 +136,10 @@ class ContainerFactory
         $eventManager = $this->get($container, EventManager::class);
         $outboxProcessManager = $this->get($container, OutboxProcessManager::class);
         $eventManager->addEventListener([Events::prePersist], $outboxProcessManager);
+
+        $eventDispatcher = $this->get($container, EventDispatcherInterface::class);
+        assert($eventDispatcher instanceof EventDispatcher);
+        $eventDispatcher->subscribeTo(ProductCreated::class, new ProductCreatedListener());
 
         return $container;
     }

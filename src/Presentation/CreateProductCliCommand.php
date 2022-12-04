@@ -40,7 +40,7 @@ final class CreateProductCliCommand extends CliCommand
             return CliCommand::FAILURE;
         }
 
-        $output->writeln('Product with name ' . $name . ' has been created!');
+        $output->writeln('Product created');
 
         return CliCommand::SUCCESS;
     }

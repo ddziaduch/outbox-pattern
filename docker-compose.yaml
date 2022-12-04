@@ -10,6 +10,7 @@ services:
       - mongo
     environment:
       - WAIT_HOSTS=mongo:27017
+      - WAIT_LOGGER_LEVEL=error
     volumes:
       - ".:/opt/project"
     working_dir: "/opt/project"
