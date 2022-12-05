@@ -29,7 +29,13 @@ final class DispatchEventsCliCommand extends CliCommand
             $count++;
         }
 
-        $output->writeln($count . ' events has been dispatched!');
+        $output->writeln(
+            sprintf(
+                '%s: dispatched %u events',
+                __CLASS__,
+                $count,
+            ),
+        );
 
         return CliCommand::SUCCESS;
     }

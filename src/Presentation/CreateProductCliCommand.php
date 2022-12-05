@@ -40,7 +40,12 @@ final class CreateProductCliCommand extends CliCommand
             return CliCommand::FAILURE;
         }
 
-        $output->writeln('Product created');
+        $output->writeln(
+            sprintf(
+                '%s: Product created',
+                __CLASS__,
+            ),
+        );
 
         return CliCommand::SUCCESS;
     }

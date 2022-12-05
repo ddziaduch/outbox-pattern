@@ -10,6 +10,10 @@ final class ProductCreatedListener
 {
     public function __invoke(ProductCreated $event): void
     {
-        echo sprintf('Product %s created!', $event->productName) . PHP_EOL;
+        echo sprintf(
+            '%s: Product with name "%s" created!',
+            __CLASS__,
+            $event->productName
+        ) . PHP_EOL;
     }
 }
