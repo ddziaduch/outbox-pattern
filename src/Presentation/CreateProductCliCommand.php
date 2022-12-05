@@ -32,6 +32,12 @@ final class CreateProductCliCommand extends CliCommand
     {
         $name = $input->getArgument('name');
 
+        if (!is_string($name)) {
+            $output->writeln('The product name must be a string');
+
+            return CliCommand::FAILURE;
+        }
+
         try {
             $this->commandBus->execute(new CreateProductCommand($name));
         } catch (\Throwable $exception) {

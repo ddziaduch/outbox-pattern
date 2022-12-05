@@ -48,9 +48,14 @@ class ContainerFactory
 
         $container->addShared(EventsMemoryCache::class);
 
+        $container->addShared(EventDispatcher::class);
+
         $container->addShared(
             EventDispatcherInterface::class,
-            new EventDispatcher(),
+            fn(): EventDispatcherInterface => $this->get(
+                $container,
+                EventDispatcher::class,
+            ),
         );
 
         $container->addShared(
@@ -137,8 +142,7 @@ class ContainerFactory
         $outboxProcessManager = $this->get($container, OutboxProcessManager::class);
         $eventManager->addEventListener([Events::prePersist], $outboxProcessManager);
 
-        $eventDispatcher = $this->get($container, EventDispatcherInterface::class);
-        assert($eventDispatcher instanceof EventDispatcher);
+        $eventDispatcher = $this->get($container, EventDispatcher::class);
         $eventDispatcher->subscribeTo(ProductCreated::class, new ProductCreatedListener());
 
         return $container;

@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Tests\Functional;
 
-use ddziaduch\OutboxPattern\Application\CreateProductCommand;
-use ddziaduch\OutboxPattern\Application\Port\CommandBus;
 use ddziaduch\OutboxPattern\Domain\Event\ProductCreated;
 use ddziaduch\OutboxPattern\Infrastructure\ContainerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product;
-use ddziaduch\OutboxPattern\Infrastructure\MongoEventReader;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectRepository;
+use League\Event\EventDispatcher;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Tester\CommandTester;
 
-/** @covers \ddziaduch\OutboxPattern\Application\CreateProductCommand */
-/** @covers \ddziaduch\OutboxPattern\Application\CreateProductHandler */
-/** @covers \ddziaduch\OutboxPattern\Infrastructure\EventDispatcherDecorator */
-/** @covers \ddziaduch\OutboxPattern\Infrastructure\OutboxProcessManager */
-/** @covers \ddziaduch\OutboxPattern\Infrastructure\MongoEventReader */
+/** @coversNothing  */
 class CreateProductTest extends TestCase
 {
+    private const PRODUCT_NAME = 'fake-product';
+
     private ObjectManager $objectManager;
-    private CommandBus $commandBus;
-    private MongoEventReader $eventReader;
+    private Application $application;
+    /** @var ProductCreated[] */
+    private array $interceptedEvents;
+    /** @var ObjectRepository<Product> */
+    private ObjectRepository $productRepository;
 
     protected function setUp(): void
     {
@@ -30,46 +32,65 @@ class CreateProductTest extends TestCase
 
         $container = (new ContainerFactory())->create();
 
-        $commandBus = $container->get(CommandBus::class);
-        assert($commandBus instanceof CommandBus);
-        $this->commandBus = $commandBus;
+        $application = $container->get(Application::class);
+        assert($application instanceof Application);
+        $this->application = $application;
 
         $objectManager = $container->get(ObjectManager::class);
         assert($objectManager instanceof ObjectManager);
-        $this->objectManager = $objectManager;
 
-        $eventReader = $container->get(MongoEventReader::class);
-        assert($eventReader instanceof MongoEventReader);
-        $this->eventReader = $eventReader;
+        $this->objectManager = $objectManager;
+        $this->productRepository = $objectManager->getRepository(Product::class);
 
         $this->removeAllProductsFromDb();
-    }
 
-    public function testCreationPutsEventsToOutbox(): void
-    {
-        $products = ['first', 'second'];
-        foreach ($products as $product) {
-            $this->commandBus->execute(new CreateProductCommand($product));
-        }
+        $this->interceptedEvents = [];
 
-        self::assertCount(
-            2,
-            $this->objectManager
-                ->getRepository(Product::class)
-                ->findAll(),
+        $dispatcher = $container->get(EventDispatcher::class);
+        assert($dispatcher instanceof EventDispatcher);
+
+        $dispatcher->subscribeTo(
+            ProductCreated::class,
+            function (ProductCreated $event): void {
+                $this->interceptedEvents[] = $event;
+            },
         );
 
-        /** @var ProductCreated $event */
-        foreach ($this->eventReader->read() as $key => $event) {
-            self::assertInstanceOf(ProductCreated::class, $event);
-            assert(array_key_exists($key, $products));
-            self::assertSame($products[$key], $event->productName);
-        }
+        ob_start();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        ob_end_clean();
+    }
+
+    public function testCreationDispatchesEvent(): void
+    {
+        $createProductCommand = $this->application->find('create-product');
+        $createProductCommandTester = new CommandTester($createProductCommand);
+        $createProductCommandTester->execute(['name' => self::PRODUCT_NAME]);
+
+        self::assertCount(
+            1,
+            $this->productRepository->findAll(),
+        );
+
+        $dispatchEventsCommand = $this->application->find('dispatch-events');
+        $dispatchEventsCommandTester = new CommandTester($dispatchEventsCommand);
+        $dispatchEventsCommandTester->execute([]);
+
+        self::assertCount(1, $this->interceptedEvents);
+        $event = end($this->interceptedEvents);
+
+        self::assertInstanceOf(ProductCreated::class, $event);
+        self::assertSame(self::PRODUCT_NAME, $event->productName);
     }
 
     private function removeAllProductsFromDb(): void
     {
-        foreach ($this->objectManager->getRepository(Product::class)->findAll() as $product) {
+        foreach ($this->productRepository->findAll() as $product) {
             $this->objectManager->remove($product);
         }
 
