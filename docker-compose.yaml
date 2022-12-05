@@ -4,8 +4,7 @@ services:
     ports:
       - 27017:27017
   app:
-    build:
-      dockerfile: Dockerfile
+    build: .
     depends_on:
       - mongo
     environment:

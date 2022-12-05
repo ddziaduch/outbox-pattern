@@ -23,13 +23,13 @@ final class DispatchEventsCliCommand extends CliCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $events = $this->eventReader->read();
-
-        foreach ($events as $event) {
+        $count = 0;
+        foreach ($this->eventReader->read() as $event) {
             $this->eventDispatcher->dispatch($event);
+            $count++;
         }
 
-        $output->writeln(count($events) . ' events has been dispatched!');
+        $output->writeln($count . ' events has been dispatched!');
 
         return CliCommand::SUCCESS;
     }

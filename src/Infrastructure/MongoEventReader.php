@@ -16,31 +16,19 @@ final class MongoEventReader
     ) {
     }
 
-    /** @return object[] */
-    public function read(): array
+    /** @return iterable<object> */
+    public function read(): iterable
     {
-        $events = [];
-
         /** @var ObjectRepository<object> $repository */
         foreach ($this->repositories as $repository) {
             $objects = $repository->findBy(['outbox' => ['$not' => ['$size' => 0]]]);
             foreach ($objects as $object) {
-                if (!property_exists($object, 'outbox')) {
-                    throw new \LogicException('Expected object to have property outbox');
-                }
-
-                if (!is_array($object->outbox)) {
-                    throw new \LogicException('Expected objects outbox to be an array');
-                }
+                $this->assertObjectIsValid($object);
 
                 foreach ($object->outbox as $serializedEvent) {
                     $event = unserialize($serializedEvent);
-
-                    if (!is_object($event)) {
-                        throw new \LogicException('Expected event to be an object');
-                    }
-
-                    $events[] = $event;
+                    $this->assertEventIsValid($event);
+                    yield $event;
                 }
 
                 $object->outbox = [];
@@ -49,7 +37,23 @@ final class MongoEventReader
         }
 
         $this->objectManager->flush();
+    }
 
-        return $events;
+    private function assertObjectIsValid(mixed $object): void
+    {
+        if (!property_exists($object, 'outbox')) {
+            throw new \LogicException('Expected object to have property outbox');
+        }
+
+        if (!is_array($object->outbox)) {
+            throw new \LogicException('Expected objects outbox to be an array');
+        }
+    }
+
+    private function assertEventIsValid(mixed $event): void
+    {
+        if (!is_object($event)) {
+            throw new \LogicException('Expected event to be an object');
+        }
     }
 }

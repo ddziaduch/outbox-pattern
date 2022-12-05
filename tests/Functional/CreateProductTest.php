@@ -59,12 +59,10 @@ class CreateProductTest extends TestCase
                 ->findAll(),
         );
 
-        $events = $this->eventReader->read();
-        self::assertCount(2, $events);
-
         /** @var ProductCreated $event */
-        foreach ($events as $key => $event) {
+        foreach ($this->eventReader->read() as $key => $event) {
             self::assertInstanceOf(ProductCreated::class, $event);
+            assert(array_key_exists($key, $products));
             self::assertSame($products[$key], $event->productName);
         }
     }
