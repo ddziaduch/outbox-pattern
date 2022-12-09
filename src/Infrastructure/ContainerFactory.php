@@ -10,7 +10,7 @@ use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\CreateProductHandler;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;
 use ddziaduch\OutboxPattern\Application\ProductCreatedListener;
-use ddziaduch\OutboxPattern\Domain\Event\ProductCreated;
+use ddziaduch\OutboxPattern\Domain\ProductCreated;
 use ddziaduch\OutboxPattern\Infrastructure\CommandBus\TacticianCommandBusFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\DocumentManagerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareClassMetadata;
@@ -46,8 +46,6 @@ class ContainerFactory
             ),
         );
 
-        $container->addShared(EventsMemoryCache::class);
-
         $container->addShared(EventDispatcher::class);
 
         $container->addShared(
@@ -59,19 +57,10 @@ class ContainerFactory
         );
 
         $container->addShared(
-            EventDispatcherDecorator::class,
-            function () use ($container): EventDispatcherDecorator {
-                $cache = $this->get($container, EventsMemoryCache::class);
-
-                return new EventDispatcherDecorator($cache);
-            },
-        );
-
-        $container->addShared(
             CreateProductHandler::class,
             fn () => new CreateProductHandler(
                 new MongoSaveProduct($this->get($container, ObjectManager::class)),
-                $this->get($container, EventDispatcherDecorator::class),
+                $this->get($container, Outbox::class),
             ),
         );
 
@@ -87,12 +76,7 @@ class ContainerFactory
             )
         );
 
-        $container->addShared(
-            OutboxProcessManager::class,
-            fn (): OutboxProcessManager => new OutboxProcessManager(
-                $this->get($container, EventsMemoryCache::class),
-            ),
-        );
+        $container->addShared(Outbox::class);
 
         $container->addShared(
             OutboxAwareClassMetadata::class,
@@ -139,8 +123,8 @@ class ContainerFactory
         );
 
         $eventManager = $this->get($container, EventManager::class);
-        $outboxProcessManager = $this->get($container, OutboxProcessManager::class);
-        $eventManager->addEventListener([Events::prePersist], $outboxProcessManager);
+        $outbox = $this->get($container, Outbox::class);
+        $eventManager->addEventListener([Events::prePersist], $outbox);
 
         $eventDispatcher = $this->get($container, EventDispatcher::class);
         $eventDispatcher->subscribeTo(ProductCreated::class, new ProductCreatedListener());

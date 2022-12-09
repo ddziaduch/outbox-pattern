@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ddziaduch\OutboxPattern\Application;
 
 use ddziaduch\OutboxPattern\Application\Port\SaveProduct;
-use ddziaduch\OutboxPattern\Domain\Aggregate\Product;
+use ddziaduch\OutboxPattern\Domain\Product;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class CreateProductHandler

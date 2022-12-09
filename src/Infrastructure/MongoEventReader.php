@@ -50,5 +50,4 @@ final class MongoEventReader
 
         $this->objectManager->flush();
     }
-
 }

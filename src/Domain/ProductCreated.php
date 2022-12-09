@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Domain\Event;
+namespace ddziaduch\OutboxPattern\Domain;
 
 use Ramsey\Uuid\Uuid;
 

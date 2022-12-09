@@ -2,10 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Domain\Aggregate;
-
-use ddziaduch\OutboxPattern\Domain\Event\ProductCreated;
-use ddziaduch\OutboxPattern\Domain\ValueObject\ProductId;
+namespace ddziaduch\OutboxPattern\Domain;
 
 final class Product
 {

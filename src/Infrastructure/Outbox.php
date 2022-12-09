@@ -6,21 +6,27 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\ObjectManager;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
-class OutboxProcessManager
+class Outbox implements EventDispatcherInterface
 {
-    public function __construct(
-        private readonly EventsMemoryCache $cache,
-    ) {
-    }
+    /** @var object[] */
+    private array $events = [];
 
     public function __destruct()
     {
-        if (!$this->cache->isEmpty()) {
+        if (!empty($this->events)) {
             throw new \LogicException(
-                'The aggregate must be persisted after dispatching it\'s events.',
+                'The object must be persisted after dispatching it\'s events.',
             );
         }
+    }
+
+    public function dispatch(object $event): object
+    {
+        $this->events[] = $event;
+
+        return $event;
     }
 
     /** @param LifecycleEventArgs<ObjectManager> $args */
@@ -38,12 +44,11 @@ class OutboxProcessManager
             return;
         }
 
-        foreach ($this->cache as $event) {
-            $outbox[] = serialize($event);
-        }
+        $object->outbox = array_merge(
+            $object->outbox,
+            array_map('serialize', $this->events),
+        );
 
-        $object->outbox = $outbox;
-
-        $this->cache->flush();
+        $this->events = [];
     }
 }

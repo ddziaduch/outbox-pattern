@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ddziaduch\OutboxPattern\Adapter;
 
 use ddziaduch\OutboxPattern\Application\Port\SaveProduct;
-use ddziaduch\OutboxPattern\Domain\Aggregate\Product;
+use ddziaduch\OutboxPattern\Domain\Product;
 use Doctrine\Persistence\ObjectManager;
 
 class MongoSaveProduct implements SaveProduct

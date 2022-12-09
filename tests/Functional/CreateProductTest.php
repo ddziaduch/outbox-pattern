@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Tests\Functional;
 
-use ddziaduch\OutboxPattern\Domain\Event\ProductCreated;
+use ddziaduch\OutboxPattern\Domain\ProductCreated;
 use ddziaduch\OutboxPattern\Infrastructure\ContainerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product;
 use Doctrine\Persistence\ObjectManager;
@@ -68,18 +68,17 @@ class CreateProductTest extends TestCase
 
     public function testCreationDispatchesEvent(): void
     {
-        $createProductCommand = $this->application->find('create-product');
-        $createProductCommandTester = new CommandTester($createProductCommand);
-        $createProductCommandTester->execute(['name' => self::PRODUCT_NAME]);
+        $this->runCliCommand(
+            'create-product',
+            ['name' => self::PRODUCT_NAME],
+        );
 
         self::assertCount(
             1,
             $this->productRepository->findAll(),
         );
 
-        $dispatchEventsCommand = $this->application->find('dispatch-events');
-        $dispatchEventsCommandTester = new CommandTester($dispatchEventsCommand);
-        $dispatchEventsCommandTester->execute([]);
+        $this->runCliCommand('dispatch-events');
 
         self::assertCount(1, $this->interceptedEvents);
         $event = end($this->interceptedEvents);
@@ -95,5 +94,15 @@ class CreateProductTest extends TestCase
         }
 
         $this->objectManager->flush();
+    }
+
+    /**
+     * @param mixed[] $input
+     */
+    private function runCliCommand(string $commandName, array $input = []): void
+    {
+        $command = $this->application->find($commandName);
+        $commandTester = new CommandTester($command);
+        $commandTester->execute($input);
     }
 }
