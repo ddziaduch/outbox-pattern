@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Presentation;
+namespace ddziaduch\OutboxPattern\Adapter\Cli;
 
 use ddziaduch\OutboxPattern\Application\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\Port\CommandBus;

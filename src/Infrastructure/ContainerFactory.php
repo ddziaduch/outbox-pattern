@@ -15,8 +15,8 @@ use ddziaduch\OutboxPattern\Infrastructure\CommandBus\TacticianCommandBusFactory
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\DocumentManagerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareClassMetadata;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareRepositories;
-use ddziaduch\OutboxPattern\Presentation\CreateProductCliCommand;
-use ddziaduch\OutboxPattern\Presentation\DispatchEventsCliCommand;
+use ddziaduch\OutboxPattern\Adapter\Cli\CreateProductCliCommand;
+use ddziaduch\OutboxPattern\Adapter\Cli\DispatchEventsCliCommand;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Persistence\ObjectManager;
