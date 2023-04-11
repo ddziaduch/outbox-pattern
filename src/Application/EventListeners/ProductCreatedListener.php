@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Application;
+namespace ddziaduch\OutboxPattern\Application\EventListeners;
 
-use ddziaduch\OutboxPattern\Domain\ProductCreated;
+use ddziaduch\OutboxPattern\Application\Events\ProductCreated;
 
 final class ProductCreatedListener
 {

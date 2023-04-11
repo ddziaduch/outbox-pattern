@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Application;
+namespace ddziaduch\OutboxPattern\Application\Ports\Primary;
 
 class CreateProductCommand implements Command
 {

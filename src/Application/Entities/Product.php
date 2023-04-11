@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Domain;
+namespace ddziaduch\OutboxPattern\Application\Entities;
+
+use ddziaduch\OutboxPattern\Application\Events\ProductCreated;
+use ddziaduch\OutboxPattern\Application\ValueObjects\ProductId;
 
 final class Product
 {

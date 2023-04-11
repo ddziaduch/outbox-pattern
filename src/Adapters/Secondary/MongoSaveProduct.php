@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Adapter;
+namespace ddziaduch\OutboxPattern\Adapters\Secondary;
 
-use ddziaduch\OutboxPattern\Application\Port\SaveProduct;
-use ddziaduch\OutboxPattern\Domain\Product;
+use ddziaduch\OutboxPattern\Application\Entities\Product;
+use ddziaduch\OutboxPattern\Application\Ports\Secondary\SaveProduct;
+use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product as ProductDocument;
 use Doctrine\Persistence\ObjectManager;
 
 class MongoSaveProduct implements SaveProduct
@@ -18,7 +19,7 @@ class MongoSaveProduct implements SaveProduct
     public function __invoke(Product $product): void
     {
         $this->objectManager->persist(
-            new \ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product(
+            new ProductDocument(
                 $product->id->value,
                 $product->name,
             )

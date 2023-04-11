@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Adapter;
+namespace ddziaduch\OutboxPattern\Adapters\Secondary;
 
-use ddziaduch\OutboxPattern\Application\Command;
-use ddziaduch\OutboxPattern\Application\Port\CommandBus;
+use ddziaduch\OutboxPattern\Application\Ports\Primary\Command;
+use ddziaduch\OutboxPattern\Application\Ports\Secondary\CommandBus;
 
 class TacticianCommandBus implements CommandBus
 {

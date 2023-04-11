@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Tests\Functional;
 
-use ddziaduch\OutboxPattern\Domain\ProductCreated;
+use ddziaduch\OutboxPattern\Application\Events\ProductCreated;
 use ddziaduch\OutboxPattern\Infrastructure\ContainerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product;
 use Doctrine\Persistence\ObjectManager;

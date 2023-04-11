@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Presentation;
+namespace ddziaduch\OutboxPattern\Adapters\Primary;
 
-use ddziaduch\OutboxPattern\Application\CreateProductCommand;
-use ddziaduch\OutboxPattern\Application\Port\CommandBus;
+use ddziaduch\OutboxPattern\Application\Ports\Primary\CreateProductCommand;
+use ddziaduch\OutboxPattern\Application\Ports\Secondary\CommandBus;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Command\Command as CliCommand;
+use Symfony\Component\Console\Command\Command as SymfonyCliCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'create-product')]
-final class CreateProductCliCommand extends CliCommand
+final class CreateProductCliCommand extends SymfonyCliCommand
 {
     public function __construct(
         private readonly CommandBus $commandBus,
@@ -35,7 +35,7 @@ final class CreateProductCliCommand extends CliCommand
         if (!is_string($name)) {
             $output->writeln('The product name must be a string');
 
-            return CliCommand::FAILURE;
+            return SymfonyCliCommand::FAILURE;
         }
 
         try {
@@ -43,7 +43,7 @@ final class CreateProductCliCommand extends CliCommand
         } catch (\Throwable $exception) {
             $output->writeln($exception->getMessage());
 
-            return CliCommand::FAILURE;
+            return SymfonyCliCommand::FAILURE;
         }
 
         $output->writeln(
@@ -53,6 +53,6 @@ final class CreateProductCliCommand extends CliCommand
             ),
         );
 
-        return CliCommand::SUCCESS;
+        return SymfonyCliCommand::SUCCESS;
     }
 }

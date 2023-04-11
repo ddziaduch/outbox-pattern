@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Application;
+namespace ddziaduch\OutboxPattern\Application\CommandHandlers;
 
-use ddziaduch\OutboxPattern\Application\Port\SaveProduct;
-use ddziaduch\OutboxPattern\Domain\Product;
+use ddziaduch\OutboxPattern\Application\Entities\Product;
+use ddziaduch\OutboxPattern\Application\Ports\Primary\CreateProductCommand;
+use ddziaduch\OutboxPattern\Application\Ports\Secondary\SaveProduct;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class CreateProductHandler

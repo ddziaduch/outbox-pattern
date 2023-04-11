@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Infrastructure;
 
-use ddziaduch\OutboxPattern\Adapter\MongoSaveProduct;
-use ddziaduch\OutboxPattern\Adapter\TacticianCommandBus;
-use ddziaduch\OutboxPattern\Application\CreateProductCommand;
-use ddziaduch\OutboxPattern\Application\CreateProductHandler;
-use ddziaduch\OutboxPattern\Application\Port\CommandBus;
-use ddziaduch\OutboxPattern\Application\ProductCreatedListener;
-use ddziaduch\OutboxPattern\Domain\ProductCreated;
+use ddziaduch\OutboxPattern\Adapters\Primary\CreateProductCliCommand;
+use ddziaduch\OutboxPattern\Adapters\Primary\DispatchEventsCliCommand;
+use ddziaduch\OutboxPattern\Adapters\Secondary\MongoSaveProduct;
+use ddziaduch\OutboxPattern\Adapters\Secondary\TacticianCommandBus;
+use ddziaduch\OutboxPattern\Application\CommandHandlers\CreateProductHandler;
+use ddziaduch\OutboxPattern\Application\EventListeners\ProductCreatedListener;
+use ddziaduch\OutboxPattern\Application\Events\ProductCreated;
+use ddziaduch\OutboxPattern\Application\Ports\Primary\CreateProductCommand;
+use ddziaduch\OutboxPattern\Application\Ports\Secondary\CommandBus;
 use ddziaduch\OutboxPattern\Infrastructure\CommandBus\TacticianCommandBusFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\DocumentManagerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareClassMetadata;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareRepositories;
-use ddziaduch\OutboxPattern\Presentation\CreateProductCliCommand;
-use ddziaduch\OutboxPattern\Presentation\DispatchEventsCliCommand;
 use Doctrine\Common\EventManager;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Persistence\ObjectManager;

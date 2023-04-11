@@ -38,14 +38,14 @@ class Outbox implements EventDispatcherInterface
             return;
         }
 
-        $outbox = $object->outbox;
+        $currentOutbox = $object->outbox;
 
-        if (!is_array($outbox)) {
+        if (!is_array($currentOutbox)) {
             return;
         }
 
         $object->outbox = array_merge(
-            $object->outbox,
+            $currentOutbox,
             array_map('serialize', $this->events),
         );
 
