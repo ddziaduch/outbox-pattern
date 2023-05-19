@@ -17,7 +17,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 /** @coversNothing  */
 class CreateProductTest extends TestCase
 {
-    private const PRODUCT_NAME = 'fake-product';
 
     private ObjectManager $objectManager;
     private Application $application;
@@ -68,9 +67,10 @@ class CreateProductTest extends TestCase
 
     public function testCreationDispatchesEvent(): void
     {
+        $productName = 'fake-product';
         $this->runCliCommand(
-            'create-product',
-            ['name' => self::PRODUCT_NAME],
+            'app:create-product',
+            ['name' => $productName],
         );
 
         self::assertCount(
@@ -78,13 +78,13 @@ class CreateProductTest extends TestCase
             $this->productRepository->findAll(),
         );
 
-        $this->runCliCommand('dispatch-events');
+        $this->runCliCommand('app:dispatch-events');
 
         self::assertCount(1, $this->interceptedEvents);
         $event = end($this->interceptedEvents);
 
         self::assertInstanceOf(ProductCreated::class, $event);
-        self::assertSame(self::PRODUCT_NAME, $event->productName);
+        self::assertSame($productName, $event->productName);
     }
 
     private function removeAllProductsFromDb(): void

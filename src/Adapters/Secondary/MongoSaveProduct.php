@@ -24,5 +24,6 @@ class MongoSaveProduct implements SaveProduct
                 $product->name,
             )
         );
+        $this->objectManager->flush();
     }
 }

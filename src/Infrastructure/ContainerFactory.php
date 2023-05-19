@@ -7,13 +7,13 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 use ddziaduch\OutboxPattern\Adapters\Primary\CreateProductCliCommand;
 use ddziaduch\OutboxPattern\Adapters\Primary\DispatchEventsCliCommand;
 use ddziaduch\OutboxPattern\Adapters\Secondary\MongoSaveProduct;
+use ddziaduch\OutboxPattern\Adapters\Secondary\Outbox;
 use ddziaduch\OutboxPattern\Adapters\Secondary\TacticianCommandBus;
 use ddziaduch\OutboxPattern\Application\CommandHandlers\CreateProductHandler;
 use ddziaduch\OutboxPattern\Application\EventListeners\ProductCreatedListener;
 use ddziaduch\OutboxPattern\Application\Events\ProductCreated;
 use ddziaduch\OutboxPattern\Application\Ports\Primary\CreateProductCommand;
 use ddziaduch\OutboxPattern\Application\Ports\Secondary\CommandBus;
-use ddziaduch\OutboxPattern\Infrastructure\CommandBus\TacticianCommandBusFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\DocumentManagerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareClassMetadata;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareRepositories;
@@ -68,7 +68,6 @@ class ContainerFactory
             CommandBus::class,
             fn (): TacticianCommandBus => new TacticianCommandBus(
                 (new TacticianCommandBusFactory())->create(
-                    $this->get($container, ObjectManager::class),
                     new ContainerLocator($container, [
                         CreateProductCommand::class => CreateProductHandler::class,
                     ]),

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Command\Command as SymfonyCliCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'dispatch-events')]
+#[AsCommand(name: 'app:dispatch-events')]
 final class DispatchEventsCliCommand extends SymfonyCliCommand
 {
     public function __construct(

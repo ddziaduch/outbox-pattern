@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Infrastructure\CommandBus;
+namespace ddziaduch\OutboxPattern\Infrastructure;
 
-use Doctrine\Persistence\ObjectManager;
 use League\Tactician\CommandBus;
 use League\Tactician\Handler\CommandHandlerMiddleware;
 use League\Tactician\Handler\CommandNameExtractor\ClassNameExtractor;
@@ -15,13 +14,11 @@ use League\Tactician\Plugins\LockingMiddleware;
 class TacticianCommandBusFactory
 {
     public function create(
-        ObjectManager $objectManager,
         HandlerLocator $locator,
     ): CommandBus {
         return new CommandBus(
             [
                 new LockingMiddleware(),
-                new DoctrineMongoODMFlushMiddleware($objectManager),
                 $this->commandHandlerMiddleware($locator),
             ]
         );

@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'create-product')]
+#[AsCommand(name: 'app:create-product')]
 final class CreateProductCliCommand extends SymfonyCliCommand
 {
     public function __construct(

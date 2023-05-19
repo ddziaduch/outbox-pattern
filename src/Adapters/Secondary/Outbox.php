@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ddziaduch\OutboxPattern\Infrastructure;
+namespace ddziaduch\OutboxPattern\Adapters\Secondary;
 
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\ObjectManager;
