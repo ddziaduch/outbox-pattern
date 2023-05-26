@@ -7,7 +7,7 @@ namespace ddziaduch\OutboxPattern\Tests\Functional;
 use ddziaduch\OutboxPattern\Application\Events\ProductCreated;
 use ddziaduch\OutboxPattern\Infrastructure\ContainerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
 use League\Event\EventDispatcher;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class CreateProductTest extends TestCase
 {
 
-    private ObjectManager $objectManager;
+    private DocumentManager $documentManager;
     private Application $application;
     /** @var ProductCreated[] */
     private array $interceptedEvents;
@@ -35,11 +35,11 @@ class CreateProductTest extends TestCase
         assert($application instanceof Application);
         $this->application = $application;
 
-        $objectManager = $container->get(ObjectManager::class);
-        assert($objectManager instanceof ObjectManager);
+        $documentManager = $container->get(DocumentManager::class);
+        assert($documentManager instanceof DocumentManager);
 
-        $this->objectManager = $objectManager;
-        $this->productRepository = $objectManager->getRepository(Product::class);
+        $this->documentManager = $documentManager;
+        $this->productRepository = $documentManager->getRepository(Product::class);
 
         $this->removeAllProductsFromDb();
 
@@ -90,10 +90,10 @@ class CreateProductTest extends TestCase
     private function removeAllProductsFromDb(): void
     {
         foreach ($this->productRepository->findAll() as $product) {
-            $this->objectManager->remove($product);
+            $this->documentManager->remove($product);
         }
 
-        $this->objectManager->flush();
+        $this->documentManager->flush();
     }
 
     /**

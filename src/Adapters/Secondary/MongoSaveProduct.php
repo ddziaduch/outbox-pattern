@@ -7,23 +7,23 @@ namespace ddziaduch\OutboxPattern\Adapters\Secondary;
 use ddziaduch\OutboxPattern\Application\Entities\Product;
 use ddziaduch\OutboxPattern\Application\Ports\Secondary\SaveProduct;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\Documents\Product as ProductDocument;
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 
 class MongoSaveProduct implements SaveProduct
 {
     public function __construct(
-        private readonly ObjectManager $objectManager,
+        private readonly DocumentManager $documentManager,
     ) {
     }
 
     public function __invoke(Product $product): void
     {
-        $this->objectManager->persist(
+        $this->documentManager->persist(
             new ProductDocument(
                 $product->id->value,
                 $product->name,
             )
         );
-        $this->objectManager->flush();
+        $this->documentManager->flush();
     }
 }

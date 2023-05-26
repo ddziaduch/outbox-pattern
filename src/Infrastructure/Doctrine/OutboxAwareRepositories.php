@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Infrastructure\Doctrine;
 
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\ObjectRepository;
 use Traversable;
 
@@ -12,7 +12,7 @@ use Traversable;
 class OutboxAwareRepositories implements \IteratorAggregate
 {
     public function __construct(
-        private readonly ObjectManager $objectManager,
+        private readonly DocumentManager $documentManager,
         private readonly OutboxAwareClassMetadata $classMetadata,
     ) {
     }
@@ -21,7 +21,7 @@ class OutboxAwareRepositories implements \IteratorAggregate
     public function getIterator(): Traversable
     {
         foreach ($this->classMetadata as $metadata) {
-            yield $this->objectManager->getRepository($metadata->getName());
+            yield $this->documentManager->getRepository($metadata->getName());
         }
     }
 }

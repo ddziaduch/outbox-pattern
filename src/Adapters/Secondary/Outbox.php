@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Adapters\Secondary;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Doctrine\Persistence\ObjectManager;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class Outbox implements EventDispatcherInterface
@@ -29,22 +29,22 @@ class Outbox implements EventDispatcherInterface
         return $event;
     }
 
-    /** @param LifecycleEventArgs<ObjectManager> $args */
+    /** @param LifecycleEventArgs<DocumentManager> $args */
     public function prePersist(LifecycleEventArgs $args): void
     {
-        $object = $args->getObject();
+        $document = $args->getObject();
 
-        if (!property_exists($object, 'outbox')) {
+        if (!property_exists($document, 'outbox')) {
             return;
         }
 
-        $currentOutbox = $object->outbox;
+        $currentOutbox = $document->outbox;
 
         if (!is_array($currentOutbox)) {
             return;
         }
 
-        $object->outbox = array_merge(
+        $document->outbox = array_merge(
             $currentOutbox,
             array_map('serialize', $this->events),
         );

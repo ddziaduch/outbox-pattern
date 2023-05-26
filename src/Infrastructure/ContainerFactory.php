@@ -6,6 +6,7 @@ namespace ddziaduch\OutboxPattern\Infrastructure;
 
 use ddziaduch\OutboxPattern\Adapters\Primary\CreateProductCliCommand;
 use ddziaduch\OutboxPattern\Adapters\Primary\DispatchEventsCliCommand;
+use ddziaduch\OutboxPattern\Adapters\Secondary\MongoEventReader;
 use ddziaduch\OutboxPattern\Adapters\Secondary\MongoSaveProduct;
 use ddziaduch\OutboxPattern\Adapters\Secondary\Outbox;
 use ddziaduch\OutboxPattern\Adapters\Secondary\TacticianCommandBus;
@@ -18,8 +19,8 @@ use ddziaduch\OutboxPattern\Infrastructure\Doctrine\DocumentManagerFactory;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareClassMetadata;
 use ddziaduch\OutboxPattern\Infrastructure\Doctrine\OutboxAwareRepositories;
 use Doctrine\Common\EventManager;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Events;
-use Doctrine\Persistence\ObjectManager;
 use League\Container\Container;
 use League\Event\EventDispatcher;
 use League\Tactician\Container\ContainerLocator;
@@ -39,8 +40,8 @@ class ContainerFactory
         $container->addShared(EventManager::class);
 
         $container->addShared(
-            ObjectManager::class,
-            fn (): ObjectManager => (new DocumentManagerFactory())->create(
+            DocumentManager::class,
+            fn (): DocumentManager => (new DocumentManagerFactory())->create(
                 $this->get($container, Client::class),
                 $this->get($container, EventManager::class),
             ),
@@ -59,7 +60,7 @@ class ContainerFactory
         $container->addShared(
             CreateProductHandler::class,
             fn () => new CreateProductHandler(
-                new MongoSaveProduct($this->get($container, ObjectManager::class)),
+                new MongoSaveProduct($this->get($container, DocumentManager::class)),
                 $this->get($container, Outbox::class),
             ),
         );
@@ -80,14 +81,14 @@ class ContainerFactory
         $container->addShared(
             OutboxAwareClassMetadata::class,
             fn (): OutboxAwareClassMetadata => new OutboxAwareClassMetadata(
-                $this->get($container, ObjectManager::class),
+                $this->get($container, DocumentManager::class),
             ),
         );
 
         $container->addShared(
             OutboxAwareRepositories::class,
             fn (): OutboxAwareRepositories => new OutboxAwareRepositories(
-                $this->get($container, ObjectManager::class),
+                $this->get($container, DocumentManager::class),
                 $this->get($container, OutboxAwareClassMetadata::class),
             ),
         );
@@ -96,7 +97,7 @@ class ContainerFactory
             MongoEventReader::class,
             fn (): MongoEventReader => new MongoEventReader(
                 $this->get($container, OutboxAwareRepositories::class),
-                $this->get($container, ObjectManager::class),
+                $this->get($container, DocumentManager::class),
             ),
         );
 

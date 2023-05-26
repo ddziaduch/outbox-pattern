@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ddziaduch\OutboxPattern\Adapters\Primary;
 
-use ddziaduch\OutboxPattern\Infrastructure\MongoEventReader;
+use ddziaduch\OutboxPattern\Application\Ports\Secondary\EventReader;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command as SymfonyCliCommand;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class DispatchEventsCliCommand extends SymfonyCliCommand
 {
     public function __construct(
-        private readonly MongoEventReader $eventReader,
+        private readonly EventReader $eventReader,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {
         parent::__construct();
